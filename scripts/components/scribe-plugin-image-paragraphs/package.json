@@ -1,0 +1,25 @@
+{
+  "name": "scribe-plugin-image-paragraphs",
+  "version": "0.0.0",
+  "description": "A plugin providing the ability to insert images in between paragrahps in The Guardians scribe editor",
+  "main": "src/scribe-plugin-image-paragraphs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/newsquid/scribe-plugin-image-paragraphs"
+  },
+  "keywords": [
+    "scribe",
+    "plugin",
+    "image",
+    "insertion"
+  ],
+  "author": "Henceforward Media Group",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/newsquid/scribe-plugin-image-paragraphs/issues"
+  },
+  "homepage": "https://github.com/newsquid/scribe-plugin-image-paragraphs"
+}

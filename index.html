@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+
+      <link rel="stylesheet" type="text/css" href="styles/main.css">
+
+      <script data-main="scripts/main" src="scripts/components/requirejs/require.js"></script>
+  </head>
+  <body>
+    <div id="main" style="position:relative">
+      <div class="toolbar" style="display:block" style="z-index:3000">
+        <button data-command-name="bold">B</button>
+        <button data-command-name="italic">i</button>
+        <button data-command-name="h1">H1</button>
+        <button data-command-name="h2">H2</button>
+        <button data-command-name="blockquote">"</button>
+        <button data-command-name="linkPrompt">Link</button>
+        <button data-command-name="insertUnorderedList">UL</button>
+      </div>
+
+      <div id="media-bar" style="display:none;">
+        <a href="#">Add image</a>
+      </div>
+
+      <img id="an-image" src="/home/csp/screenshots/1.png" height="50px"></img>
+
+      <article id="content" class="content scribe">
+      </article>
+
+    </div>
+  </body>
+</html>

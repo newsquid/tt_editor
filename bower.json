@@ -1,0 +1,14 @@
+{
+  "name": "TrunkTrunk",
+    "dependencies": {
+      "requirejs": "*",
+      "scribe": "*",
+      "scribe-plugin-toolbar": "*",
+      "scribe-plugin-blockquote-command": "*",
+      "scribe-plugin-heading-command": "*",
+      "scribe-plugin-link-prompt-command": "*",
+      "scribe-plugin-sanitizer": "*",
+      "scribe-plugin-image-paragraphs": "git://github.com/newsquid/scribe-plugin-image-paragraphs/",
+      "scribe-plugin-hover-toolbar": "git://github.com/newsquid/scribe-plugin-hover-toolbar/"
+  }
+}
