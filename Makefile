@@ -1,8 +1,19 @@
-default: launch-chromium
+TARGET=tt_editor.js
+RJS=./node_modules/.bin/r.js -o
+BUILD_CONFIG=build.js
 
-launch-chromium: dependencies
-	chromium `pwd`/index.html
+.PHONY: dependencies build surf
+
+all: build
+
+build: $(TARGET)
+
+$(TARGET): dependencies
+	$(RJS) $(BUILD_CONFIG) optimize=none out=$(TARGET)
 
 dependencies:
-	rm -rf scripts/components/scribe-plugin-image-paragraphs
+	npm install
 	bower install
+
+surf: build
+	chromium `pwd`/index.html

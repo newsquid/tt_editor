@@ -1,0 +1,14 @@
+{
+  "name": "scribe-plugin-image-paragraphs",
+  "main": "scribe-plugin-image-paragraphs.js",
+  "version": "0.1.0",
+  "ignore": [
+    ".editorconfig",
+    ".git",
+    "Makefile",
+    "build",
+    "node_modules",
+    "package.json",
+    "src"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "scribe-plugin-image-paragraphs",
+  "main": "scribe-plugin-image-paragraphs.js",
+  "ignore": [
+    ".editorconfig",
+    ".git",
+    "Makefile",
+    "build",
+    "node_modules",
+    "package.json",
+    "src"
+  ],
+  "homepage": "https://github.com/newsquid/scribe-plugin-image-paragraphs",
+  "_release": "58a9a04c36",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "58a9a04c36967d4aa920a7d91f71381d0dc21ec7"
+  },
+  "_source": "git://github.com/newsquid/scribe-plugin-image-paragraphs.git",
+  "_target": "*",
+  "_originalSource": "git://github.com/newsquid/scribe-plugin-image-paragraphs/"
+}
