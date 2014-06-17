@@ -7041,16 +7041,6 @@ define('tt_editor',[ 'scribe',
             scribePluginSanitizer, scribePluginImageParagraphs,
             scribePluginHoverToolbar) {
 
-  var scribeElement = document.querySelector('.scribe');
-
-  // Create an instance of Scribe
-  var scribe = new Scribe(scribeElement);
-
-  // Use some plugins
-  scribe.use(scribePluginBlockquoteCommand());
-  scribe.use(scribePluginHeadingCommand(2));
-  scribe.use(scribePluginHeadingCommand(1));
-  scribe.use(scribePluginLinkPromptCommand());
   //scribe.use(scribePluginSanitizer({ tags: {
   //  p: {},
   //  b: {},
@@ -7062,7 +7052,16 @@ define('tt_editor',[ 'scribe',
   //  a: {}
   //}}));
 
-  return function(toolbarElement,mediabarElement,addImageFunction){
+  return function(scribeElement,toolbarElement,mediabarElement,addImageFunction){
+
+    // Create an instance of Scribe
+    var scribe = new Scribe(scribeElement);
+
+    // Use some plugins
+    scribe.use(scribePluginBlockquoteCommand());
+    scribe.use(scribePluginHeadingCommand(2));
+    scribe.use(scribePluginHeadingCommand(1));
+    scribe.use(scribePluginLinkPromptCommand());
     scribe.use(scribePluginToolbar(toolbarElement));
     scribe.use(scribePluginHoverToolbar(toolbarElement));
     scribe.use(scribePluginImageParagraphs(mediabarElement,addImageFunction));

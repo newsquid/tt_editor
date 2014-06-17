@@ -9,6 +9,7 @@ and initialize the (AMD) component in a manner similar to:
 ```javascript
 require(["tt_editor"],function(tt_editor){
 
+  var scribeElement = document.querySelector('.content');
   var toolbarElement = document.querySelector('.toolbar');
   var mediabarElement = document.getElementById('media-bar');
 
@@ -18,6 +19,6 @@ require(["tt_editor"],function(tt_editor){
     /* Or, alternatively, a more clever and useful approach */
   }
 
-  var tte = new tt_editor(toolbarElement,mediabarElement,addImage);
+  var tte = new tt_editor(scribeElement,toolbarElement,mediabarElement,addImage);
 });
 ```

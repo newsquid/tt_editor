@@ -24,7 +24,7 @@
 
       <img id="an-image" src="/home/csp/screenshots/1.png" height="50px"></img>
 
-      <article id="content" class="content scribe">
+      <article id="content" class="content">
       </article>
 
     </div>
@@ -32,6 +32,7 @@
 
       require(["tt_editor"],function(tt_editor){
 
+          var scribeElement = document.querySelector('.content');
           var toolbarElement = document.querySelector('.toolbar');
           var mediabarElement = document.getElementById('media-bar');
 
@@ -40,7 +41,7 @@
             element.parentNode.insertBefore(image,element);
           }
 
-          var tte = new tt_editor(toolbarElement,mediabarElement,addImage);
+          var tte = new tt_editor(scribeElement,toolbarElement,mediabarElement,addImage);
           console.log(tte);
 
       });
