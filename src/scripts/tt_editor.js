@@ -1,4 +1,4 @@
-require([ 'scribe',
+define([ 'scribe',
           'scribe-plugin-blockquote-command',
           'scribe-plugin-toolbar',
           'scribe-plugin-heading-command',
@@ -33,14 +33,11 @@ require([ 'scribe',
   //  a: {}
   //}}));
 
-  var toolbarElement = document.querySelector('.toolbar');
-  scribe.use(scribePluginToolbar(toolbarElement));
+  return function(toolbarElement,mediabarElement,addImageFunction){
+    scribe.use(scribePluginToolbar(toolbarElement));
+    scribe.use(scribePluginHoverToolbar(toolbarElement));
+    scribe.use(scribePluginImageParagraphs(mediabarElement,addImageFunction));
 
-  function addImage(event,element){
-    var image = document.getElementById("an-image");
-    element.parentNode.insertBefore(image,element);
+    return {} // Public interface. OF NOTHINGNESS!!!!
   }
-
-  scribe.use(scribePluginHoverToolbar(toolbarElement));
-  scribe.use(scribePluginImageParagraphs(document.getElementById('media-bar'),addImage));
 });

@@ -3,8 +3,8 @@
   <head>
 
       <!--link rel="stylesheet" type="text/css" href="styles/main.css"-->
-
       <script src="tt_editor.js"></script>
+
   </head>
   <body>
     <div id="main" style="position:relative">
@@ -28,5 +28,23 @@
       </article>
 
     </div>
+    <script>
+
+      require(["tt_editor"],function(tt_editor){
+
+          var toolbarElement = document.querySelector('.toolbar');
+          var mediabarElement = document.getElementById('media-bar');
+
+          function addImage(event,element){
+            var image = document.getElementById("an-image");
+            element.parentNode.insertBefore(image,element);
+          }
+
+          var tte = new tt_editor(toolbarElement,mediabarElement,addImage);
+          console.log(tte);
+
+      });
+    </script>
+
   </body>
 </html>

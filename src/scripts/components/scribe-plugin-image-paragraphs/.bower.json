@@ -11,11 +11,11 @@
     "src"
   ],
   "homepage": "https://github.com/newsquid/scribe-plugin-image-paragraphs",
-  "_release": "58a9a04c36",
+  "_release": "832755e4e4",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "58a9a04c36967d4aa920a7d91f71381d0dc21ec7"
+    "commit": "832755e4e4c84dd058e4f77dd197e9aa91a5a486"
   },
   "_source": "git://github.com/newsquid/scribe-plugin-image-paragraphs.git",
   "_target": "*",

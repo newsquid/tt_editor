@@ -11,11 +11,11 @@
     "src"
   ],
   "homepage": "https://github.com/newsquid/scribe-plugin-hover-toolbar",
-  "_release": "b33216fba9",
+  "_release": "bc5ac45ee1",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "b33216fba9fd40e6a2ca9af8d28b7404d37c5ef9"
+    "commit": "bc5ac45ee1b489bd17b2e24d4bffdb459c8ec8c4"
   },
   "_source": "git://github.com/newsquid/scribe-plugin-hover-toolbar.git",
   "_target": "*",

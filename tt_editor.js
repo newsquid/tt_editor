@@ -420,7 +420,7 @@ var requirejs, require, define;
     };
 }());
 
-define("almond/almond", function(){});
+define("components/almond/almond", function(){});
 
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
@@ -6938,8 +6938,6 @@ define('scribe-plugin-image-paragraphs',[],function(){
         mediaBarElement.style.left = element.offsetLeft + "px";
         mediaBarElement.style.position = 'absolute';
 
-        mediabarElement.focus();
-
         return mediaBarElement;
       }
 
@@ -6995,7 +6993,7 @@ define('scribe-plugin-hover-toolbar',[],function(){
         if(selectedElement() && ((selection.range.endOffset - selection.range.startOffset) > 0)){
 
           scribe.transactionManager.run(function(){
-            showToolbar(selectedElement());
+          showToolbar(selectedElement());
           })
         } else {
           selectionOff(event);
@@ -7018,6 +7016,8 @@ define('scribe-plugin-hover-toolbar',[],function(){
         toolbarElement.style.top = rect.top-rect.height*2 + "px";
         toolbarElement.style.left = rect.left + "px";
         toolbarElement.style.display = "block";
+
+        toolbarElement.focus();
       }
 
       function hideToolbar(){
@@ -7027,7 +7027,7 @@ define('scribe-plugin-hover-toolbar',[],function(){
   }
 });
 
-require([ 'scribe',
+define('tt_editor',[ 'scribe',
           'scribe-plugin-blockquote-command',
           'scribe-plugin-toolbar',
           'scribe-plugin-heading-command',
@@ -7062,17 +7062,12 @@ require([ 'scribe',
   //  a: {}
   //}}));
 
-  var toolbarElement = document.querySelector('.toolbar');
-  scribe.use(scribePluginToolbar(toolbarElement));
+  return function(toolbarElement,mediabarElement,addImageFunction){
+    scribe.use(scribePluginToolbar(toolbarElement));
+    scribe.use(scribePluginHoverToolbar(toolbarElement));
+    scribe.use(scribePluginImageParagraphs(mediabarElement,addImageFunction));
 
-  function addImage(event,element){
-    var image = document.getElementById("an-image");
-    element.parentNode.insertBefore(image,element);
+    return {} // Public interface. OF NOTHINGNESS!!!!
   }
-
-  scribe.use(scribePluginHoverToolbar(toolbarElement));
-  scribe.use(scribePluginImageParagraphs(document.getElementById('media-bar'),addImage));
 });
-
-define("../main", function(){});
 
