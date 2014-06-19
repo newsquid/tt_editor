@@ -17,6 +17,7 @@ style.css: $(CSSS)
 	cat src/css/* > style.css
 
 surf: build serve
+	chromium http://localhost:8000/fake.html
 	chromium http://localhost:8000
 
 serve:
