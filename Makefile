@@ -4,9 +4,9 @@ BUILD_CONFIG=build.js
 
 CSSS=$(wildcard src/css/*)
 
-.PHONY: dependencies build surf
+.PHONY: dependencies build surf serve
 
-all: build
+all: surf
 
 build: $(TARGET) style.css
 
@@ -16,9 +16,13 @@ $(TARGET): dependencies
 style.css: $(CSSS)
 	cat src/css/* > style.css
 
+surf: build serve
+	chromium http://localhost:8000/fake.html
+	chromium http://localhost:8000
+
+serve:
+	python3 -m http.server &
+
 dependencies:
 	npm install
 	node_modules/.bin/bower install
-
-surf: build
-	chromium `pwd`/index.html
