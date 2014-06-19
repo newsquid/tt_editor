@@ -1,0 +1,1 @@
+(function(){this.blankNonTTLinks=function(){},$(function(){return blankNonTTLinks()})}).call(this);
