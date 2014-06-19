@@ -13,7 +13,7 @@ $(TARGET): dependencies
 
 dependencies:
 	npm install
-	bower install
+	node_modules/.bin/bower install
 
 surf: build
 	chromium `pwd`/index.html
