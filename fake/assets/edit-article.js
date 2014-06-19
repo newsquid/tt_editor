@@ -21,12 +21,6 @@
             handleEmptyFigcaptions();
         });
 
-        $title.keyup(function(e){
-            if(isBackspaceKey(e.keyCode)){
-                $("#title").find("*").each(function(){$(this).removeAttr("style")});
-            }
-        });
-
         $content.mouseleave(function(e){
             //ignore event from children, eg article contents
             var cont = $("#content");

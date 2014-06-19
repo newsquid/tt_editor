@@ -195,7 +195,7 @@ var article = (function($) {
             price: $("#price").val(),
             group: $(".group").text(),
             main_img_caption: $("#main_img_caption").text(),
-            title: $("#title").text(),
+            title: $("#title").val(),
             content: cleanEditorHtml($("#content").html())
         }, function (d, textStatus, jqXHR) {
             if (this_save_i == save_i) {
