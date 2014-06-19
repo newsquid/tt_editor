@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrunkTrunk | Writer meet Reader - Reader meet Writer</title>
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,900,700,700italic,400italic' rel='stylesheet' type='text/css'>
+    <link data--track="true" href="http://demo.trunktrunk.org/assets/application.css" media="all" rel="stylesheet" />
+    <script data-turbolinks-track="true" src="http://demo.trunktrunk.org/assets/application.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/tt_editor_style.css">
+    <script src="tt_editor.js"></script>
+
+  </head>
+  <body>
+    <div id="top"></div>
+    <header class="site-header">
+ <nav>
+     <a href="/" id="nav_home" class="pull-left">
+         <img src="http://demo.trunktrunk.org/assets/tt_logo_header.png" 
+              alt="Home"
+              class="nav-img"
+              title="Home">
+     </a>
+
+     <div class="pull-right nav-items">
+           <a href="/posts/new"><span class='nav-label'>create</span> <span class='glyphicon glyphicon-pencil nav-icon'></span></a>
+           <a href="/dashboard"><span class='glyphicon glyphicon-home nav-icon'></span></a>
+
+           <input type="text" placeholder="Search..." 
+               class="searchbar" id="searchbar">
+           <a href="#search" id="nav-search"><span class="glyphicon glyphicon-search nav-icon"></span></a>
+       </div>
+
+    </nav>
+ </header>
+ <article class="edit-article article-view">
+<div class="editor-bar">
+  <div class="pull-left unpublished">
+    <form action="/posts/14" class="button_to" method="post"><div><input name="_method" type="hidden" value="delete" /><input class="btn btn-default" type="submit" value="Delete" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div></form>
+    <div class="saving-status">Just loaded content</div>
+  </div>
+  <div class="pull-left published">
+      <button class="btn btn-default" id="unpublish-button">Unpublish</button>
+      <div class="saving-status">Just loaded content</div>
+  </div>
+  <div class="pull-right unpublished">
+    <button class="btn btn-success" id="publish-button">Publish</button>
+  </div>
+  <div class="pull-right published">
+    <button class="btn btn-primary" id="discard-changes-button">Cancel</button>
+    <button class="btn btn-success" id="publish-changes-button">Publish Changes</button>
+    <br>
+    <div class="last-published">Last published: <span class="last-publish-date">08:12 19-06-2014</span></div>
+  </div>
+  <div class="pull-right">
+    <div class="price-box input-group">
+  <input type="number" class="form-control edit-field" id="price" style="width: 90px;" step="0.01" min=0 value="0.0">
+</div>
+  </div>
+</div>
+
+<form accept-charset="UTF-8" action="/posts/14" data-remote="true" id="post-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="_method" type="hidden" value="patch" /></div>
+</form>
+<script>
+    (function($) {
+        $(document).ready(function() {
+            setUpSaveAndPublish({
+                discard_link: "http://localhost:3000/posts/14/unpublished_revisions",
+                is_published: false
+            });
+        });
+    })(jQuery);
+</script>
+
+  <header id="header" class="article-header article-category">
+    <hgroup class="title">
+  <h5>
+    <a href='/readers/5'>
+      By nt /
+      Jun 19, 2014
+    </a>
+  </h5>
+  <h1>no tag</h1>
+</hgroup>
+
+<form accept-charset="UTF-8" action="/post/attach" class="media_form crop_form" enctype="multipart/form-data" id="main_image_form" method="post" style=""><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
+        <input id="main_image_form_file" name="post[media]" type="file" />
+        <input id="post_type" name="post[type]" type="hidden" value="main_image" />
+        <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
+
+        <img src="/assets/image_button_article_2x.png" class="main-img trigger" id="main_image">
+        <input name="commit" type="submit" value="Update Post" />
+</form>    <script>
+        $(document).ready(function() {
+            $("#main_image_form").submit(function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            $("#main_image_form_file").trigger_cropping({
+                scaleWidth: 960,
+                aspectRatio: 16/9
+            }, function(img_src) {
+                $("#main_image")
+                    .attr("src", img_src)
+                    .css("opacity", 0.5);
+
+                var media_data = base64_to_blob(img_src);
+
+                var $form = $("#main_image_form");
+                var formData = new FormData($form[0]);
+                formData.append("post[media]", media_data, "article-main-image");
+
+                $.ajax({
+                    url: $form.attr("action"),
+                    type: $form.attr("method"),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function() {
+                        $("#main_image").css("opacity", 1);
+                    }
+                });
+            });
+        });
+    </script>
+
+      <figcaption contenteditable="true" id="main_img_caption" class="form-element edit-field">
+        
+      </figcaption>
+    </figure>
+
+    <h1 class="form-element edit-field" id="title" contenteditable="true"></h1>
+
+  </header>
+
+  <div class="article-info">
+  <div class="tags" id="tags">
+
+
+
+  </div>
+</div>
+
+
+  <section class="g-body content-container">
+  <article id="content" class="article-text editable form-element edit-field content">
+    
+  </article>
+</section>
+
+    <div id="main" style="position:relative">
+      <div class="toolbar" style="display:block" style="z-index:3000">
+        <button data-command-name="bold">B</button>
+        <button data-command-name="italic">i</button>
+        <button data-command-name="h1">H1</button>
+        <button data-command-name="h2">H2</button>
+        <button data-command-name="blockquote">"</button>
+        <button data-command-name="linkPrompt">Link</button>
+        <button data-command-name="insertUnorderedList">UL</button>
+        <button data-command-name="addImage">img</button>
+      </div>
+
+      <article id="content" class="content">
+      </article>
+
+    </div>
+    <script>
+
+      require(["tt_editor"],function(tt_editor){
+
+          var scribeElement = document.querySelector('.content');
+          var toolbarElement = document.querySelector('.toolbar');
+          var mediabarElement = document.getElementById('media-bar');
+
+          function addImage(event,element){
+            var image = document.getElementById("an-image");
+            element.parentNode.insertBefore(image,element);
+          }
+
+          var tte = new tt_editor(scribeElement,toolbarElement,mediabarElement,addImage);
+          console.log(tte);
+
+      });
+    </script>
+
+  <script data-turbolinks-track="true" src="/assets/grande.js?body=1"></script>
+<script data-turbolinks-track="true" src="/assets/hiddenform.edit.js?body=1"></script>
+<script data-turbolinks-track="true" src="/assets/edit-field.js?body=1"></script>
+<script data-turbolinks-track="true" src="/assets/edit-tags.js?body=1"></script>
+<script data-turbolinks-track="true" src="/assets/edit-save-publish.js?body=1"></script>
+<script data-turbolinks-track="true" src="/assets/edit-article.js?body=1"></script>
+<script data-turbolinks-track="true" src="/assets/edit-price.js?body=1"></script>
+<script data-turbolinks-track="true" src="/assets/edit.js?body=1"></script>
+
+<!-- TODO: Why is groups used here!? -->
+<script data-turbolinks-track="true" src="/assets/groups.js?body=1"></script>
+
+
+
+  <script data-turbolinks-track="true" src="/assets/tos.js?body=1"></script>
+  <script>
+      var vars = {
+          post: "14",
+          viewer: "5"
+      };
+
+      (function($) {
+          $(document).ready(function() {
+              var post = vars.post,
+                  reader = vars.viewer;
+
+              // Present writer with a "redirect-to-TOS" modal if we're not
+              // currently editing the TOS and he has yet to accept the tos
+              loadRedirectIf(post,reader,function(){ loadRedirect(post,reader);});
+          });
+      })(jQuery);
+  </script>
+
+
+  <div class="add-content-box">
+  <form accept-charset="UTF-8" action="/post/attach" class="media_form" enctype="multipart/form-data" id="imgform" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
+
+      <input id="post_media" name="post[media]" type="file" />
+      <input id="post_type" name="post[type]" type="hidden" value="image" />
+      <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
+
+      <button class="trigger" id="imgbutton" name="button" type="submit">insert Image</button>
+      <input name="commit" type="submit" value="Update Post" />
+
+</form></div>
+
+</article>
+
+      <footer class="site-footer"><div class="wrap">
+    <span class="copyright">All rights reserved &copy; TrunkTrunk.com</span>
+    <span class="to-top"><a href="#top" class="to-top-link">Back to top</a></span>
+    <span><a href="/tos">Terms of Service</a></span>
+    <!--span><a href="#NoPrivacyAllowed">Privacy Policy</a></span-->
+    <span><a target="_blank" href="mailto:support@trunktrunk.org">Contact</a></span>
+    <!--span><a href="#AboutWhat?">About</a></span-->
+</div></footer>
+
+    </body>
+</html>
