@@ -16,12 +16,13 @@ $(TARGET): dependencies
 style.css: $(CSSS)
 	cat src/css/* > style.css
 
-surf: build serve
+surf: build
 	chromium http://localhost:8000/fake.html
 	chromium http://localhost:8000
+	$(MAKE) serve
 
 serve:
-	python3 -m http.server &
+	python3 -m http.server
 
 dependencies:
 	npm install
