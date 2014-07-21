@@ -70,14 +70,108 @@
 
 <!---- BEGIN EDITOR ---->
 
+<!-- new styling -->
+<style type="text/css">
+    .toolbar {
+        border: 1px solid #aaa;
+        border-top: 5px solid black;
+        margin: 0 !important;
+        background: white;
+        width: 40px;
+        height: 300px;
+        margin-left: -50px !important;
+        display: inline-block !important;
+        margin-bottom: -307px !important;
+    }
+    .toolbar button {
+        display: block;
+        background: white;
+        width: 100%;
+        border: none;
+        padding-bottom: 7px;
+        font-size: 0.9em;
+    }
+    .saving-status {
+        position: fixed;
+        top: 41px;
+        left: 0;
+        background: rgb(230,230,230);
+        padding: 15px;
+        margin: 0;
+        margin-top: 0 !important;
+        font-size: 1em !important;
+    }
+    .saving-status:after {
+        content: 'No changes made';
+    }
+    .saving-status:before {
+        content: ' ';
+        background: rgb(230,230,230);
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 6px;
+    }
+    .saving-status.modified {
+        content: 'Content modified';
+        background: #F5B469;
+    }
+    .saving-status.modified:after {
+        content: 'Content modified';
+    }
+    .saving-status.modified:before {
+        background: #F5B469;
+    }
+    .saving-status.saving {
+        background: #EB9D44;
+    }
+    .saving-status.saving:after {
+        content: 'Saving...';
+    }
+    .saving-status.saving:before {
+        background: #EB9D44;
+    }
+    .saving-status.success {
+        background: #55B867;
+    }
+    .saving-status.success:after {
+        content: 'Succesfully saved!';
+        color: white;
+    }
+    .saving-status.success:before {
+        background: #55B867;
+    }
+    .saving-status.failure {
+        background: #D10000;
+    }
+    .saving-status.failure:after {
+        content: 'Saving failed :(';
+        color: white;
+    }
+    .saving-status.failure:before {
+        background: #D10000;
+    }
+    #content {
+        min-height: 300px;
+    }
+</style>
+<script>
+    $(window).scroll(function() {
+        console.log($("html").scrollTop() + " scrolled");
+        if($("html").scrollTop() < 40) {
+            $(".saving-status").css("margin-top",$("html").scrollTop()+"px");
+        }
+    });//40px
+</script>
+<div class="saving-status failure"></div>
+
 <div class="editor-bar">
   <div class="pull-left unpublished">
     <form action="http://demo.trunktrunk.org/posts/14" class="button_to" method="post"><div><input name="_method" type="hidden" value="delete" /><input class="btn btn-default" type="submit" value="Delete" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div></form>
-    <div class="saving-status">Just loaded content</div>
   </div>
   <div class="pull-left published">
       <button class="btn btn-default" id="unpublish-button">Unpublish</button>
-      <div class="saving-status">Just loaded content</div>
   </div>
   <div class="pull-right unpublished">
     <button class="btn btn-success" id="publish-button">Publish</button>
@@ -243,7 +337,6 @@
 <script data-turbolinks-track="true" src="fake/assets/edit-save-publish.js?body=1"></script>
 <script data-turbolinks-track="true" src="fake/assets/edit-article.js?body=1"></script>
 <script data-turbolinks-track="true" src="fake/assets/edit-price.js?body=1"></script>
-<script data-turbolinks-track="true" src="fake/assets/edit.js?body=1"></script>
 
 <!-- TODO: Why is groups used here!? -->
 <script data-turbolinks-track="true" src="fake/assets/groups.js?body=1"></script>
