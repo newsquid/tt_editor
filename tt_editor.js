@@ -7063,7 +7063,7 @@ define('tt_editor',[ 'scribe',
     scribe.use(scribePluginHeadingCommand(1));
     scribe.use(scribePluginLinkPromptCommand());
     scribe.use(scribePluginToolbar(toolbarElement));
-    scribe.use(scribePluginHoverToolbar(toolbarElement));
+    //scribe.use(scribePluginHoverToolbar(toolbarElement));
     scribe.use(scribePluginImageParagraphs(mediabarElement,addImageFunction));
 
     return {} // Public interface. OF NOTHINGNESS!!!!
