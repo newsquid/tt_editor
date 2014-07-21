@@ -78,18 +78,23 @@
         margin: 0 !important;
         background: white;
         width: 40px;
-        height: 300px;
-        margin-left: -50px !important;
+        height: 350px;
+        margin-left: -47px !important;
         display: inline-block !important;
-        margin-bottom: -307px !important;
+        margin-bottom: -357px !important; //height + 7px
+        padding-top: 4px;
     }
     .toolbar button {
         display: block;
         background: white;
         width: 100%;
         border: none;
-        padding-bottom: 7px;
-        font-size: 0.9em;
+        margin-bottom: 4px;
+        font-size: 0.8em;
+        height: 30px;
+    }
+    .toolbar .publish {
+
     }
     .saving-status {
         position: fixed;
@@ -153,7 +158,57 @@
         background: #D10000;
     }
     #content {
-        min-height: 300px;
+        min-height: 350px;
+    }
+    #main {
+        margin-top: -35px !important;
+    }
+    .publish-button {
+        background: #55B867;
+        position: fixed;
+        top: 111px;
+        left: 6px;
+        font-size: 0.8em;
+        padding: 10px;
+        color: white;
+        cursor: pointer;
+        -moz-transition: padding 0.7s;
+    }
+    .publish-button:after {
+        content: " Publish";
+    }
+    .publish-button.published:after {
+        content: " Publish changes";
+    }
+    .publish-button:hover {
+        padding-left: 20px;
+    }
+    .settings-button {
+        position: fixed;
+        top: 155px;
+        left: 6px;
+        background: #999;
+        color: white;
+        padding: 10px;
+        font-size: 0.8em;
+        cursor: pointer;
+        -moz-transition: padding 0.7s;
+    }
+    .settings-button:after {
+        content: " Settings";
+    }
+    .settings-button:hover {
+        padding-left: 20px;
+    }
+    .first-tag, .group {
+        border: 0px solid red;
+        -moz-transition: border 1s;
+        opacity: 1 !important;
+    }
+    .first-tag.empty, .group.empty {
+        border: 6px solid red;
+        -moz-transition: border 1s;
+        color: rgba(255,255,255,0.3) !important;
     }
 </style>
 <script>
@@ -165,6 +220,8 @@
     });//40px
 </script>
 <div class="saving-status failure"></div>
+<div class="publish-button published"><span class="glyphicon glyphicon-send"></span></div>
+<div class="settings-button"><span class="glyphicon glyphicon-cog"></span></div>
 
 <div class="editor-bar">
   <div class="pull-left unpublished">
