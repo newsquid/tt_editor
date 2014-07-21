@@ -78,18 +78,17 @@
         margin: 0 !important;
         background: white;
         width: 40px;
-        height: 350px;
-        margin-left: -47px !important;
+        height: 280px;
+        margin-left: -47px !important; //width + 7px
         display: inline-block !important;
-        margin-bottom: -357px !important; //height + 7px
-        padding-top: 4px;
+        margin-bottom: -280px !important; //height
     }
     .toolbar button {
         display: block;
         background: white;
         width: 100%;
         border: none;
-        margin-bottom: 4px;
+        margin: 2px 0;
         font-size: 0.8em;
         height: 30px;
     }
@@ -137,14 +136,28 @@
     .saving-status.saving:before {
         background: #EB9D44;
     }
-    .saving-status.success {
+    .saving-status.publishing {
+        background: #7EF282;
+    }
+    .saving-status.publishing:after {
+        content: 'Publishing...';
+        color: white;
+    }
+    .saving-status.publishing:before {
+        background: #7EF282;
+    }
+    .saving-status.saved, .saving-status.published {
         background: #55B867;
     }
-    .saving-status.success:after {
+    .saving-status.saved:after {
         content: 'Succesfully saved!';
         color: white;
     }
-    .saving-status.success:before {
+    .saving-status.published:after {
+        content: 'Succesfully published!';
+        color: white;
+    }
+    .saving-status.saved:before, .saving-status.published:before {
         background: #55B867;
     }
     .saving-status.failure {
@@ -158,10 +171,10 @@
         background: #D10000;
     }
     #content {
-        min-height: 350px;
+        min-height: 280px;
     }
     #main {
-        margin-top: -35px !important;
+        margin-top: -5px !important;
     }
     .publish-button {
         background: #55B867;
@@ -219,8 +232,29 @@
         }
     });//40px
 </script>
-<div class="saving-status failure"></div>
+<div class="saving-status saved"></div>
+
+<!--
+    PUBLISH BUTTON
+    Clicking this leads to a modal prompting for a potential price, if the
+       article has not been published before.
+    Here you conforim publishing.
+    Upon publishing you are told that you can change the price in the
+      settings.
+    You are also given a "View published article" link to view the
+      published article.
+    If the article has already been published, publishing changes happens
+      immediately on click.
+-->
 <div class="publish-button published"><span class="glyphicon glyphicon-send"></span></div>
+
+<!--
+    SETTINGS BUTTON
+    Clicking this leads to a settings modal. Settings are:
+    - Price
+    - Delete
+    - Unpublish (if published)
+-->
 <div class="settings-button"><span class="glyphicon glyphicon-cog"></span></div>
 
 <div class="editor-bar">
@@ -352,15 +386,18 @@
   <section class="g-body content-container">
     <div id="main" style="position:relative">
       <div class="toolbar" style="display:block" style="z-index:3000">
-        <button data-command-name="bold">B</button>
-        <button data-command-name="italic">i</button>
-        <button data-command-name="h1">H1</button>
-        <button data-command-name="h2">H2</button>
-        <button data-command-name="blockquote">"</button>
-        <button data-command-name="linkPrompt">Link</button>
-        <button data-command-name="insertUnorderedList">UL</button>
-        <button data-command-name="addImage">img</button>
+        <button data-command-name="bold" data-toggle="tooltip" data-placement="left" title="Bold">B</button>
+        <button data-command-name="italic" data-toggle="tooltip" data-placement="left" title="Italic">i</button>
+        <button data-command-name="h1" data-toggle="tooltip" data-placement="left" title="Big heading">H1</button>
+        <button data-command-name="h2" data-toggle="tooltip" data-placement="left" title="Small heading">H2</button>
+        <button data-command-name="blockquote" data-toggle="tooltip" data-placement="left" title="Quotation">"</button>
+        <button data-command-name="linkPrompt" data-toggle="tooltip" data-placement="left" title="Link">Link</button>
+        <button data-command-name="insertUnorderedList" data-toggle="tooltip" data-placement="left" title="Insert unordered list">UL</button>
+        <button data-command-name="addImage" data-toggle="tooltip" data-placement="left" title="Insert image">img</button>
       </div>
+      <script>
+        $(".toolbar button").tooltip("hide");
+      </script>
 
       <article id="content" class="content">
       </article>
