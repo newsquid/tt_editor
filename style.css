@@ -132,6 +132,7 @@
 }
 .publish-button:after {
     content: " Publish";
+    padding-left: 3px;
 }
 .publish-button.published:after {
     content: " Publish changes";
@@ -145,11 +146,19 @@
 }
 .settings-button:after {
     content: " Settings";
+    padding-left: 3px;
 }
 
 /* MAIN AREA */
 #content {
     min-height: 280px;
+}
+#content.empty:after {
+    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec mi lorem, tristique quis sodales in, volutpat ut ligula. Nullam commodo aliquam magna, ut tristique elit accumsan iaculis. Cras augue magna, varius in nulla id, pharetra pellentesque metus. Duis et ullamcorper orci, vitae consequat nulla. Curabitur id metus eget ante euismod venenatis vel vitae mauris. Ut auctor velit non augue molestie, eu convallis mauris varius. Mauris id viverra est. Maecenas eu dignissim orci, in condimentum odio ...";
+    opacity: 0.6;
+    display: inline-block;
+    margin-top: -1.45em;
+    z-index: -2;
 }
 #main {
     margin-top: -5px !important;
