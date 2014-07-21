@@ -16,18 +16,6 @@
 
         if($main_tag.text() == "")
             $main_tag.addClass("empty");
-
-        // don't navigate away from the field on tab when selecting an item in dropdown (jQuery UI)
-        $("#taglist").bind( "keydown", function( event ) {
-            if ( event.keyCode === $.ui.keyCode.TAB ) {
-                event.preventDefault();
-            }
-            if ( event.keyCode === $.ui.keyCode.ENTER ) {
-                var elem = $("#taglist");
-                elem.text("," + elem.html().trim());
-                event.preventDefault();
-            }
-        });
     });
 
     function makeTagsModifiable() {
@@ -52,6 +40,7 @@
         $tag
             .attr("contenteditable",true)
             .addClass("next-tag")
+            .addClass("empty")
             .removeClass("tag")
             .addClass("edit-field")
             .focus();
@@ -123,18 +112,17 @@
 
     function tagKeydown(event) {
         var $this_tag = $(this);
+        
+        $this_tag.removeClass("invalid");
 
         if(event.which == 188 || event.which == 13) {
             if(tagWithTextExists($this_tag.text())) {
                 event.preventDefault();
+                tagInvalid($this_tag, "Identical to already added tag");
                 return false;
             }
 
             solidifyTag($this_tag);
-
-            //TODO: Maybe figure out how to move noticing of article state change out of here
-            // (as this doesn't have anything directly to do with the tag functionality).
-            article.note_changed();
 
             //Add new tag
             var $next_tag = addNewTag();
@@ -146,6 +134,7 @@
         else if($this_tag.text().length > 15 && event.which != 8){
             //Limit length of tag name to at most 16 characters
             event.preventDefault();
+            tagInvalid($this_tag, "Max 16 characters");
             return false;
         }
     }
@@ -168,11 +157,12 @@
             .addClass("tag")
             .attr("contenteditable","false");
         makeTagModifiable($tag);
-        //TODO: Click: edit; click cross: delete
 
         if ($(".tag").length == 1) {
             setMainTag($tag.text());
         }
+        
+        article.note_changed();
     }
 
     function setMainTag(text) {
@@ -197,5 +187,18 @@
 
     function addEmptyGroup() {
         $('<a class="group empty"></a>').prependTo(".tags");
+    }
+    
+    function tagInvalid($tag, msg) {
+        $tag.addClass("invalid");
+        tagTooltip($tag, msg);
+    }
+    
+    function tagTooltip($tag, msg) {
+        $($tag).tooltip({
+            placement: "top",
+            title: msg,
+            trigger: "focus"
+        }).tooltip("show");
     }
 })(jQuery);

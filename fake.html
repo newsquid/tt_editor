@@ -71,15 +71,10 @@
 
 <!---- BEGIN EDITOR ---->
 
-<!-- new styling -->
-<script>
-    $(window).scroll(function() {
-        console.log($("html").scrollTop() + " scrolled");
-        if($("html").scrollTop() < 40) {
-            $(".saving-status").css("margin-top",$("html").scrollTop()+"px");
-        }
-    });//40px
-</script>
+<!-- 
+    SAVING STATUS
+    States: -, modified, saving, saved, publishing, published, not-saved, not-published.
+-->
 <div class="saving-status"></div>
 
 <!--
@@ -194,10 +189,25 @@
 <!--
     TAGS
     On error, the error should be explained with a message in a tooltip.
+    TODO: Errthang
+    TODO: Bug: When several tags exist and first tag is removed, the new fillable tag appears first in the list.
 -->
 <div class="article-info">
     <div class="tags" id="tags"></div>
 </div>
+<script>
+// don't navigate away from the field on tab when selecting an item in dropdown (jQuery UI)
+$("#taglist").bind( "keydown", function( event ) {
+    if ( event.keyCode === $.ui.keyCode.TAB ) {
+        event.preventDefault();
+    }
+    if ( event.keyCode === $.ui.keyCode.ENTER ) {
+        var elem = $("#taglist");
+        elem.text("," + elem.html().trim());
+        event.preventDefault();
+    }
+});
+</script>
 
 <!-- MAIN TEXT -->
   <section class="g-body content-container">
@@ -216,7 +226,7 @@
         $(".toolbar button").tooltip("hide");
       </script>
 
-      <article id="content" class="content empty">
+      <article id="content" class="content edit-field empty">
       </article>
 
     </div>
@@ -243,9 +253,9 @@
 
 <!-- PAGE-SPECIFIC JS INCLUDES -->
 <script data-turbolinks-track="true" src="assets/hiddenform.edit.js?body=1"></script>
-<script data-turbolinks-track="true" src="assets/edit-field.js?body=1"></script>
-<script data-turbolinks-track="true" src="assets/edit-tags.js?body=1"></script>
-<script data-turbolinks-track="true" src="assets/edit-save-publish.js?body=1"></script>
+<!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-field.js?body=1"></script>
+<!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-tags.js?body=1"></script>
+<!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-save-publish.js?body=1"></script>
 <script data-turbolinks-track="true" src="assets/edit-article.js?body=1"></script>
 <script data-turbolinks-track="true" src="assets/edit-price.js?body=1"></script>
 <!-- TODO: Why is groups used here!? -->
@@ -361,7 +371,7 @@
 </div>
 
 <!-- SET UP SAVE AND PUBLISH -->
-<form accept-charset="UTF-8" action="http//demo.trunktrunk.org/posts/14" data-remote="true" id="post-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="_method" type="hidden" value="patch" /></div>
+<form accept-charset="UTF-8" action="http://demo.trunktrunk.org/posts/14" data-remote="true" id="post-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="_method" type="hidden" value="patch" /></div>
 </form>
 <script>
     (function($) {

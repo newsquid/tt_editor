@@ -2,6 +2,7 @@
 .edit-field {
     -moz-transition: border 1s;
     transition: border 1s;
+    border: 0px solid red !important;
 }
 .edit-field.invalid {
     border: 6px solid red !important;
@@ -15,9 +16,8 @@
     background: white;
     width: 40px;
     height: 280px;
-    margin-left: -47px !important; //width + 7px
-    display: inline-block !important;
-    margin-bottom: -280px !important; //height
+    margin-left: -47px !important; /*width + 7px*/
+    margin-bottom: -280px !important; /*height*/
 }
 .toolbar button {
     display: block;
@@ -28,14 +28,11 @@
     font-size: 0.8em;
     height: 30px;
 }
-.toolbar .publish {
-
-}
 
 /* LEFT HAND SIDE */
 .saving-status {
     position: fixed;
-    top: 41px;
+    top: 41px; /*header height + header border width*/
     left: 0;
     background: rgb(230,230,230);
     padding: 15px;
@@ -99,14 +96,18 @@
 .saving-status.saved:before, .saving-status.published:before {
     background: #55B867;
 }
-.saving-status.failure {
+.saving-status.not-saved, .saving-status.not-published {
     background: #D10000;
 }
-.saving-status.failure:after {
+.saving-status.not-saved:after {
     content: 'Saving failed :(';
     color: white;
 }
-.saving-status.failure:before {
+.saving-status.not-published:after {
+    content: 'Publishing failed :(';
+    color: white;
+}
+.saving-status.not-saved:before, .saving-status.not-published:before {
     background: #D10000;
 }
 

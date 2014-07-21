@@ -3,16 +3,49 @@ var publish_settings = {
     is_published: false
 };
 
+var saving_status = (function() {
+    var $saving_status = $(".saving-status");
+    
+    var set_status = function(status) {
+        $saving_status.removeClass("modified saving saved not-saved publishing published not-published");
+        $saving_status.addClass(status);
+    }
+    
+    return {
+        blank: function() {
+            set_status("");
+        },
+        modified: function() {
+            set_status("modified");
+        },
+        saving: function() {
+            set_status("saving");
+        },
+        saved: function() {
+            set_status("saved");
+        },
+        notSaved: function() {
+            set_status("not-saved");
+        },
+        publishing: function() {
+            set_status("publishing");
+        },
+        published: function() {
+            set_status("published");
+        },
+        notPublished: function() {
+            set_status("not-published");
+        }
+    };
+})();
+
 //Merge into publish settings
 function setUpSaveAndPublish(settings) {
     publish_settings = settings;
 }
 
 var article = (function($) {
-
-    var $published_header = $(".editor-bar .published");
-    var $unpublished_header = $(".editor-bar .unpublished");
-
+    var $publish_button = $(".publish-button");
     $(document).ready(function() {
         if(publish_settings.is_published) {
             showPublishedHeader();
@@ -26,12 +59,11 @@ var article = (function($) {
     });
 
     function setUpSaving() {
-        $(".edit-article").delegate(".edit-field:not(.group)","keyup",function(e) {
-            if (!isArrowKey(e.keyCode))
+        $(".edit-article").delegate(".edit-field:not(.group):not(.first-tag):not(next-tag)","keyup",function(e) {
+            if (!isArrowKey(e.keyCode)) {
                 noteArticleChanged();
+            }
         });
-
-        $("#price").bind('change',noteArticleChanged);
 
         intervalSave(4000, save_success, save_failure);
     }
@@ -43,13 +75,11 @@ var article = (function($) {
     }
 
     function showPublishedHeader() {
-        $unpublished_header.hide();
-        $published_header.show();
+        $publish_button.addClass("published");
     }
 
     function showUnpublishedHeader() {
-        $published_header.hide();
-        $unpublished_header.show();
+        $publish_button.removeClass("published");
     }
 
     function isArrowKey(keyCode) {
@@ -89,6 +119,8 @@ var article = (function($) {
         setTimeout(function () {
             if (article_updated) {
                 article_updated = false;
+                saving_status.saving();
+                
                 save(success_callback, fail_callback);
             }
             intervalSave(time, success_callback, fail_callback);
@@ -97,7 +129,7 @@ var article = (function($) {
 
     function save_success() {
         if (!article_updated) {
-            setMessage("All changes saved!");
+            saving_status.saved();
         }
     }
 
@@ -109,18 +141,19 @@ var article = (function($) {
             }
 
             $.d_modal(text);
-            setMessage("Save failed :(");
+            
+            saving_status.notSaved();
         }
     }
 
     function innerPublish() {
-        setMessage("Publishing...");
+        saving_status.publishing();
 
         submitPostForm({
             published: true
         }, function(d, s, jqXHR) {
             setPublishedNow();
-            setMessage("Published");
+            saving_status.published();
             if(jqXHR.responseJSON !== null){
                 console.log(jqXHR.responseJSON)
                 var redirect = jqXHR.responseJSON.redirect
@@ -137,21 +170,20 @@ var article = (function($) {
                 $.d_modal(message);
             }
 
-
-            setMessage("Publishing failed :(");
+            saving_status.notPublished();
         });
     }
 
     function innerUnpublish() {
-        setMessage("Unpublishing...");
+        $.d_modal("Unpublishing");
 
         submitPostForm({
             published: false
         }, function(d, s, jqXHR) {
-            setMessage("Unpublished");
+            $.d_modal("Unpublished");
         }, function(jqXHR, text, error) {
             $.d_modal(error);
-            setMessage("Unpublishing failed :(");
+            $.d_modal("Unpublishing failed :(");
             showPublishedHeader();
         });
     }
@@ -175,7 +207,7 @@ var article = (function($) {
     }
 
     function setMessage(str) {
-        $(".saving-status").text(str);
+        console.log("deprecated setMessage called");
     }
 
     /**
@@ -202,13 +234,11 @@ var article = (function($) {
                 success_callback();
             }
         }, function (jqXHR, textStatus, errorThrown) {
-            message = JSON.parse(jqXHR.responseText).message
-
             // Clear previous errors
-            $(".dismiss").click()
+            $(".dismiss").click();
 
             if (this_save_i == save_i) {
-                fail_callback(message);
+                fail_callback(textStatus+errorThrown+": "+JSON.stringify(jqXHR));
             }
         });
     }
@@ -252,7 +282,7 @@ var article = (function($) {
 
     function noteArticleChanged() {
         article_updated = true;
-        setMessage("Content modified.");
+        saving_status.modified();
     }
 
     function discardChanges(discard_link) {
@@ -263,7 +293,7 @@ var article = (function($) {
                 location.replace(d.redirect);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                setMessage("Discard failed.");
+                $.d_modal("Discard failed.");
                 $.d_modal(errorThrown);
             }
         });
