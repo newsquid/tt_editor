@@ -104,6 +104,7 @@
         margin: 0;
         margin-top: 0 !important;
         font-size: 1em !important;
+        z-index: 100;
     }
     .saving-status:after {
         content: 'No changes made';
@@ -176,6 +177,13 @@
     #main {
         margin-top: -5px !important;
     }
+    #title {
+        box-sizing: content-box;
+        -moz-transition: border 1s;
+    }
+    #title.empty {
+        border: 6px solid red !important;
+    }
     .publish-button {
         background: #55B867;
         position: fixed;
@@ -186,6 +194,7 @@
         color: white;
         cursor: pointer;
         -moz-transition: padding 0.7s;
+        z-index: 100;
     }
     .publish-button:after {
         content: " Publish";
@@ -206,6 +215,7 @@
         font-size: 0.8em;
         cursor: pointer;
         -moz-transition: padding 0.7s;
+        z-index: 100;
     }
     .settings-button:after {
         content: " Settings";
