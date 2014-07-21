@@ -1,3 +1,13 @@
+/* EDIT FIELD */
+.edit-field {
+    -moz-transition: border 1s;
+    transition: border 1s;
+}
+.edit-field.invalid {
+    border: 6px solid red !important;
+}
+
+/* TOOLBAR */
 .toolbar {
     border: 1px solid #aaa;
     border-top: 5px solid black;
@@ -21,6 +31,8 @@
 .toolbar .publish {
 
 }
+
+/* LEFT HAND SIDE */
 .saving-status {
     position: fixed;
     top: 41px;
@@ -97,19 +109,7 @@
 .saving-status.failure:before {
     background: #D10000;
 }
-#content {
-    min-height: 280px;
-}
-#main {
-    margin-top: -5px !important;
-}
-#title {
-    box-sizing: content-box;
-    -moz-transition: border 1s;
-}
-#title.empty {
-    border: 6px solid red !important;
-}
+
 .publish-button, .settings-button {
     position: fixed;
     left: 6px;
@@ -146,6 +146,19 @@
 .settings-button:after {
     content: " Settings";
 }
+
+/* MAIN AREA */
+#content {
+    min-height: 280px;
+}
+#main {
+    margin-top: -5px !important;
+}
+#title {
+    box-sizing: content-box;
+}
+
+/* TAGS */
 .first-tag, .group {
     border: 0px solid red;
     -moz-transition: border 1s;

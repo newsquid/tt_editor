@@ -37,7 +37,8 @@
     <script data-turbolinks-track="true" src="fake/assets/jquery.Jcrop.min.js?body=1"></script>
     <script data-turbolinks-track="true" src="fake/assets/jquery.cropper.js?body=1"></script>
     <script data-turbolinks-track="true" src="fake/assets/application.js?body=1"></script>
-        <script src="fake/assets/posts.js?body=1"></script>
+    
+    <script src="fake/assets/posts.js?body=1"></script>
 
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="tt_editor.js"></script>
@@ -104,53 +105,19 @@
 -->
 <div class="settings-button"><span class="glyphicon glyphicon-cog"></span></div>
 
-<div class="editor-bar">
-  <div class="pull-left unpublished">
-    <form action="http://demo.trunktrunk.org/posts/14" class="button_to" method="post"><div><input name="_method" type="hidden" value="delete" /><input class="btn btn-default" type="submit" value="Delete" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div></form>
-  </div>
-  <div class="pull-left published">
-      <button class="btn btn-default" id="unpublish-button">Unpublish</button>
-  </div>
-  <div class="pull-right unpublished">
-    <button class="btn btn-success" id="publish-button">Publish</button>
-  </div>
-  <div class="pull-right published">
-    <button class="btn btn-primary" id="discard-changes-button">Cancel</button>
-    <button class="btn btn-success" id="publish-changes-button">Publish Changes</button>
-    <br>
-    <div class="last-published">Last published: <span class="last-publish-date">08:12 19-06-2014</span></div>
-  </div>
-  <div class="pull-right">
-    <div class="price-box input-group">
-  <input type="number" class="form-control edit-field" id="price" style="width: 90px;" step="0.01" min=0 value="0.0">
-</div>
-  </div>
-</div>
-
-<form accept-charset="UTF-8" action="http//demo.trunktrunk.org/posts/14" data-remote="true" id="post-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="_method" type="hidden" value="patch" /></div>
-</form>
-<script>
-    (function($) {
-        $(document).ready(function() {
-            setUpSaveAndPublish({
-                discard_link: "http://demo.trunktrunk.org/posts/14/unpublished_revisions",
-                is_published: false
-            });
-        });
-    })(jQuery);
-</script>
-
-  <header id="header" class="article-header article-category">
+<!-- HEADER -->
+<header id="header" class="article-header article-category">
     <hgroup class="title">
-  <h5>
-    <a href='/readers/5'>
-      By nt /
-      Jun 19, 2014
-    </a>
-  </h5>
-  <h1>no tag</h1>
+    <h5>
+        <a href='/readers/5'>
+          By nt /
+          Jun 19, 2014
+        </a>
+    </h5>
+    <h1>no tag</h1>
 </hgroup>
 
+<!-- MAIN IMAGE UPLOAD -->
 <form accept-charset="UTF-8" action="/post/attach" class="media_form crop_form" enctype="multipart/form-data" id="main_image_form" method="post" style=""><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
         <input id="main_image_form_file" name="post[media]" type="file" />
         <input id="post_type" name="post[type]" type="hidden" value="main_image" />
@@ -198,6 +165,9 @@
 
       </figcaption>
     </figure>
+<!-- END MAIN IMAGE UPLOAD -->
+    
+<!-- TITLE -->
 <textarea type="text" name="title" id="title" class="form-element edit-field" placeholder="Title" value=""></textarea>
 <script>
         var $title = $("textarea#title");
@@ -221,15 +191,15 @@
 
   </header>
 
-  <div class="article-info">
-  <div class="tags" id="tags">
-
-
-
-  </div>
+<!--
+    TAGS
+    On error, the error should be explained with a message in a tooltip.
+-->
+<div class="article-info">
+    <div class="tags" id="tags"></div>
 </div>
 
-
+<!-- MAIN TEXT -->
   <section class="g-body content-container">
     <div id="main" style="position:relative">
       <div class="toolbar" style="display:block" style="z-index:3000">
@@ -269,21 +239,20 @@
       });
     </script>
 </section>
+<!-- END MAIN TEXT -->
 
-
-  <!--script data-turbolinks-track="true" src="fake/assets/grande.js?body=1"></script-->
+<!-- PAGE-SPECIFIC JS INCLUDES -->
 <script data-turbolinks-track="true" src="fake/assets/hiddenform.edit.js?body=1"></script>
 <script data-turbolinks-track="true" src="fake/assets/edit-field.js?body=1"></script>
 <script data-turbolinks-track="true" src="fake/assets/edit-tags.js?body=1"></script>
 <script data-turbolinks-track="true" src="fake/assets/edit-save-publish.js?body=1"></script>
 <script data-turbolinks-track="true" src="fake/assets/edit-article.js?body=1"></script>
 <script data-turbolinks-track="true" src="fake/assets/edit-price.js?body=1"></script>
-
 <!-- TODO: Why is groups used here!? -->
 <script data-turbolinks-track="true" src="fake/assets/groups.js?body=1"></script>
 
 
-
+<!-- TOS PROMPTER -->
   <script data-turbolinks-track="true" src="fake/assets/tos.js?body=1"></script>
   <script>
       var vars = {
@@ -303,19 +272,42 @@
       })(jQuery);
   </script>
 
-
-  <div class="add-content-box">
-  <form accept-charset="UTF-8" action="/post/attach" class="media_form" enctype="multipart/form-data" id="imgform" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
-
+<!-- DEPRECATED IMAGE INSERTION -->
+<div class="add-content-box">
+    <form accept-charset="UTF-8" action="/post/attach" class="media_form" enctype="multipart/form-data" id="imgform" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" />    <input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
       <input id="post_media" name="post[media]" type="file" />
       <input id="post_type" name="post[type]" type="hidden" value="image" />
       <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
-
       <button class="trigger" id="imgbutton" name="button" type="submit">insert Image</button>
       <input name="commit" type="submit" value="Update Post" />
+    </form>
+</div>
 
-</form></div>
+<!--
+    SETTINGS MODAL
+-->
+<div class="settings-modal">
+    <form action="http://demo.trunktrunk.org/posts/14" class="button_to" method="post"><div><input name="_method" type="hidden" value="delete" /><input class="btn btn-default" type="submit" value="Delete" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div></form>
+    <button class="btn btn-default" id="unpublish-button">Unpublish</button>
+    <button class="btn btn-primary" id="discard-changes-button">Discard changes since last publish</button>
+    <div class="price-box input-group">
+      <input type="number" class="form-control edit-field" id="price" style="width: 90px;" step="0.01" min=0 value="0.0">
+    </div>
+</div>
 
+<!-- SET UP SAVE AND PUBLISH -->
+<form accept-charset="UTF-8" action="http//demo.trunktrunk.org/posts/14" data-remote="true" id="post-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="_method" type="hidden" value="patch" /></div>
+</form>
+<script>
+    (function($) {
+        $(document).ready(function() {
+            setUpSaveAndPublish({
+                discard_link: "http://demo.trunktrunk.org/posts/14/unpublished_revisions",
+                is_published: false
+            });
+        });
+    })(jQuery);
+</script>
 
 <!---- END EDITOR ---->
 
