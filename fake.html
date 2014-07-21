@@ -166,7 +166,26 @@
 
       </figcaption>
     </figure>
-<input type="text" name="title" id="title" class="form-element edit-field" placeholder="Title" value="">
+<textarea type="text" name="title" id="title" class="form-element edit-field" placeholder="Title" value=""></textarea>
+<script>
+        var $title = $("textarea#title");
+
+        $title.keypress(function(e) {
+            if(e.which == 13) {
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            }
+        }).keyup(function(e) {
+            $title[0].style.height = '24px';
+            $title[0].style.height = $title[0].scrollHeight + 'px';
+        });
+
+        $(document).ready(function() {
+            $title[0].style.height = '24px';
+            $title[0].style.height = $title[0].scrollHeight + 'px';
+        }); 
+</script>
 
   </header>
 
