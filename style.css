@@ -178,3 +178,8 @@
     -moz-transition: border 1s;
     color: rgba(255,255,255,0.3) !important;
 }
+
+/* MODALS */
+.modal-sm .modal-body {
+    font-size: 0.8em;
+}

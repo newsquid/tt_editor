@@ -94,7 +94,7 @@
     If the article has already been published, publishing changes happens
       immediately on click.
 -->
-<div class="publish-button"><span class="glyphicon glyphicon-send"></span></div>
+<div class="publish-button" data-toggle="modal" data-target="#publish-modal"><span class="glyphicon glyphicon-send"></span></div>
 
 <!--
     SETTINGS BUTTON
@@ -103,7 +103,7 @@
     - Delete
     - Unpublish (if published)
 -->
-<div class="settings-button"><span class="glyphicon glyphicon-cog"></span></div>
+<div class="settings-button" data-toggle="modal" data-target="#settings-modal"><span class="glyphicon glyphicon-cog"></span></div>
 
 <!-- HEADER -->
 <header id="header" class="article-header article-category">
@@ -207,7 +207,7 @@
         <button data-command-name="italic" data-toggle="tooltip" data-placement="left" title="Italic"><span class="glyphicon glyphicon-italic"></span></button>
         <button data-command-name="h1" data-toggle="tooltip" data-placement="left" title="Big heading"><span class="glyphicon glyphicon-header"></span></button>
         <button data-command-name="h2" data-toggle="tooltip" data-placement="left" title="Small heading"><span class="glyphicon glyphicon-header" style="font-size: 0.8em"></span></button>
-        <button data-command-name="blockquote" data-toggle="tooltip" data-placement="left" title="Quotation">"</button>
+        <button data-command-name="blockquote" data-toggle="tooltip" data-placement="left" title="Quotation" style="font-size: 1.3em;">&ldquo;</button>
         <button data-command-name="linkPrompt" data-toggle="tooltip" data-placement="left" title="Link"><span class="glyphicon glyphicon-link"></span></button>
         <button data-command-name="insertUnorderedList" data-toggle="tooltip" data-placement="left" title="Insert unordered list"><span class="glyphicon glyphicon-list"></span></button>
         <button data-command-name="addImage" data-toggle="tooltip" data-placement="left" title="Insert image"><span class="glyphicon glyphicon-picture"></span></button>
@@ -285,13 +285,78 @@
 
 <!--
     SETTINGS MODAL
+    TODO: Errthang
 -->
-<div class="settings-modal">
-    <form action="http://demo.trunktrunk.org/posts/14" class="button_to" method="post"><div><input name="_method" type="hidden" value="delete" /><input class="btn btn-default" type="submit" value="Delete" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div></form>
-    <button class="btn btn-default" id="unpublish-button">Unpublish</button>
-    <button class="btn btn-primary" id="discard-changes-button">Discard changes since last publish</button>
-    <div class="price-box input-group">
-      <input type="number" class="form-control edit-field" id="price" style="width: 90px;" step="0.01" min=0 value="0.0">
+<div class="modal fade settings-modal" id="settings-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Settings</h4>
+            </div>
+            <div class="modal-body">
+                <form action="http://demo.trunktrunk.org/posts/14" class="button_to" method="post"><div><input name="_method" type="hidden" value="delete" /><input class="btn btn-default" type="submit" value="Delete" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div></form>
+                <button class="btn btn-default" id="unpublish-button">Unpublish</button>
+                <button class="btn btn-primary" id="discard-changes-button">Discard changes since last publish</button>
+                <div class="price-box input-group">
+                  <input type="number" class="form-control edit-field" id="price" style="width: 90px;" step="0.01" min=0 value="0.0">
+                </div>
+                <button class="btn btn-primary" id="update-price-button">Update price</button>
+            </div>
+        </div>
+    </div>
+</div>
+     
+<!--
+    PUBLISH MODAL
+    TODO: Should indicate that price is in USD
+    TODO: Make submission work
+    TODO: Submission should prompt user: "Your article has been published. <View published article>"
+-->
+<div class="modal fade publish-modal" id="publish-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Publish article</h4>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to charge money for your article?</p>
+                <div class="form-group" style="text-align: center;">
+                    <div class="input-group" style="display: inline-block; text-align: left;">
+                        <input type="number" class="form-control edit-field" id="price" style="width: 100px;" step="0.01" min=0 value="0.0">
+                    </div>
+                </div>
+                <p>You can change the price later, via the article's Settings menu.</p>
+                <button class="btn btn-block btn-lg btn-success" id="confirm-publish">Publish</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("#confirm-publish").click(function() {
+            $("#publish-modal").modal("hide");
+            $("#post-publish-modal").modal("show");
+        });
+    });
+</script>
+     
+<!--
+    POST-PUBLISH MODAL
+    TODO: Errthang
+-->
+<div class="modal fade post-publish-modal" id="post-publish-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Your article has been published!</h4>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-block btn-lg btn-primary">View published article</button>
+            </div>
+        </div>
     </div>
 </div>
 
