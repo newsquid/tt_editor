@@ -167,18 +167,6 @@
     box-sizing: content-box;
 }
 
-/* TAGS */
-.first-tag, .group {
-    border: 0px solid red;
-    -moz-transition: border 1s;
-    opacity: 1 !important;
-}
-.first-tag.empty, .group.empty {
-    border: 6px solid red;
-    -moz-transition: border 1s;
-    color: rgba(255,255,255,0.3) !important;
-}
-
 /* MODALS */
 .modal-sm .modal-body {
     font-size: 0.8em;
