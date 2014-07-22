@@ -119,6 +119,11 @@ var tags = (function($) {
                 tagInvalid($this_tag, "Identical to already added tag");
                 return false;
             }
+            if($this_tag.text().trim() == "") {
+                event.preventDefault();
+                tagInvalid($this_tag, "Tag cannot be empty");
+                return false;
+            }
 
             solidifyTag($this_tag);
 

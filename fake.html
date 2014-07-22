@@ -133,8 +133,12 @@ var scroll_amount = function() {
 -->
 <div class="publish-button"><span class="glyphicon glyphicon-send"></span></div>
 <script>
+    var article_price = 0; //should be set from ruby
+
     $(".publish-button").click(function() {
+        $(".publish-price-picker").val(article_price);
         if(article.isValid()) {
+            article.save();
             $("#publish-modal").modal("show");
         }
     });
@@ -147,7 +151,13 @@ var scroll_amount = function() {
     - Delete
     - Unpublish (if published)
 -->
-<div class="settings-button" data-toggle="modal" data-target="#settings-modal"><span class="glyphicon glyphicon-cog"></span></div>
+<div class="settings-button"><span class="glyphicon glyphicon-cog"></span></div>
+<script>
+    $(".settings-button").click(function() {
+        $(".settings-price-picker").val(article_price);
+        $("#settings-modal").modal("show");
+    });
+</script>
 
 <!-- HEADER -->
 <header id="header" class="article-header article-category">
@@ -407,7 +417,6 @@ $("#taglist").bind( "keydown", function( event ) {
     PUBLISH MODAL
     TODO: Should indicate that price is in USD
     TODO: Make submission work
-    TODO: Submission should prompt user: "Your article has been published. <View published article>"
 -->
 <div class="modal fade publish-modal" id="publish-modal" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm">
@@ -423,7 +432,7 @@ $("#taglist").bind( "keydown", function( event ) {
                         Price (USD):
                     </div>
                     <div class="price-picker-container">
-                        <input type="number" class="price-picker publish-input-price" style="width: 100px;" step="0.01" min=0 value="0.0">
+                        <input type="number" class="price-picker publish-price-picker" style="width: 100px;" step="0.01" min=0 value="0.0">
                     </div>
                 </div>
                 <p>You can change the price later, via the article's Settings menu.</p>
@@ -435,8 +444,19 @@ $("#taglist").bind( "keydown", function( event ) {
 <script>
     $(document).ready(function() {
         $("#confirm-publish").click(function() {
-            $("#publish-modal").modal("hide");
-            $("#post-publish-modal").modal("show");
+            article.publish(function() {
+                $("#publish-modal").modal("hide");
+                article_price = $(".publish-price-picker").val();
+                $("#post-publish-modal").modal("show");
+            });
+        });
+
+        /**
+         * Changing price in publish price picker, changes it in settings
+         * one, and vice versa
+         */
+        $(".publish-price-picker, .settings-price-picker").change(function() {
+            $(".publish-price-picker, .settings-price-picker").val($(this).val());
         });
     });
 </script>

@@ -101,8 +101,8 @@ var article = (function($) {
         save(function() {
             save_success();
             innerUnpublish();
-        }, function() {
-            save_failure();
+        }, function(message) {
+            save_failure(message);
             showPublishedHeader();
         });
     }
@@ -119,7 +119,6 @@ var article = (function($) {
         setTimeout(function () {
             if (article_updated) {
                 article_updated = false;
-                saving_status.saving();
                 
                 save(success_callback, fail_callback);
             }
@@ -135,18 +134,27 @@ var article = (function($) {
 
     function save_failure(message) {
         if (!article_updated) {
-            var text = "Save failed for unknown reason.";
-            if (message !== undefined) {
-                text = message;
-            }
-
-            $.d_modal(text);
-            
             saving_status.notSaved();
         }
     }
 
-    function innerPublish() {
+    function publish_success() {
+        if (!article_updated) {
+            saving_status.published();
+        }
+    }
+
+    function publish_failure(message) {
+        if (!article_updated) {
+            saving_status.notPublished();
+        }
+    }
+
+    function innerPublish(success_callback, failure_callback) {
+        //Default callbacks
+        if(typeof success_callback === "undefined") success_callback = function() {};
+        if(typeof fail_callback === "undefined") fail_callback = function() {};
+
         saving_status.publishing();
 
         submitPostForm({
@@ -154,23 +162,15 @@ var article = (function($) {
         }, function(d, s, jqXHR) {
             setPublishedNow();
             saving_status.published();
-            if(jqXHR.responseJSON !== null){
-                console.log(jqXHR.responseJSON)
-                var redirect = jqXHR.responseJSON.redirect
-                if(redirect !== undefined){
-                    document.location.replace(redirect);
-                }
-            }
-        }, function(jqXHR, text, error) {
-            var message = jqXHR.responseJSON.message 
 
-            if(message === undefined) {
-                $.d_modal(error);
-            } else {
-                $.d_modal(message);
-            }
+            success_callback();
+        }, function(jqXHR, text, error) {
+            console.log("Failed to publish.");
+            console.log(jqXHR);
 
             saving_status.notPublished();
+
+            fail_callback();
         });
     }
 
@@ -229,15 +229,14 @@ var article = (function($) {
     }
 
     function innerUnpublish() {
-        $.d_modal("Unpublishing");
+        saving_status.unpublishing();
 
         submitPostForm({
             published: false
         }, function(d, s, jqXHR) {
-            $.d_modal("Unpublished");
+            saving_status.unpublished();
         }, function(jqXHR, text, error) {
-            $.d_modal(error);
-            $.d_modal("Unpublishing failed :(");
+            saving_status.notUnpublished();
             showPublishedHeader();
         });
     }
@@ -252,39 +251,43 @@ var article = (function($) {
     }
 
     function dateString(date) {
-        return twoDigits(date.getHours()) + ":" + twoDigits(date.getMinutes()) +
-            " " + twoDigits(date.getDate()) + "-" + twoDigits(date.getMonth()) + "-" + date.getFullYear();
+        return twoDigits(date.getHours()) + ":" +
+            twoDigits(date.getMinutes()) + " " +
+            twoDigits(date.getDate()) + "-" +
+            twoDigits(date.getMonth()) + "-" +
+            date.getFullYear();
     }
 
     function twoDigits(digits) {
         return digits < 10 ? "0" + digits : digits;
     }
 
-    function setMessage(str) {
-        console.log("deprecated setMessage called");
-    }
-
     /**
-     * Saves the form. calls success_callback on success, fail_callback on error.
+     * Saves the form. calls success_callback on success, fail_callback
+     * on error.
      */
     function save(success_callback, fail_callback) {
         //Default callbacks
-        if(typeof success_callback === "undefined") success_callback = save_success;
-        if(typeof fail_callback === "undefined") fail_callback = save_failure;
+        if(typeof success_callback === "undefined") success_callback = function() {};
+        if(typeof fail_callback === "undefined") fail_callback = function() {};
 
         var this_save_i = ++save_i;
+        
+        saving_status.saving();
 
         submitPostForm({
             tag_list: tagsAsCommaSeparatedString(),
             channel: $("#channel").val(),
             published: "noop",
-            price: $("#price").val(),
+            price: $(".settings-price-picker").val(),
             group: $(".group").text(),
             main_img_caption: $("#main_img_caption").text(),
             title: $("#title").val(),
             content: cleanEditorHtml($("#content").html())
         }, function (d, textStatus, jqXHR) {
             if (this_save_i == save_i) {
+                saving_status.saved();
+
                 success_callback();
             }
         }, function (jqXHR, textStatus, errorThrown) {
@@ -292,12 +295,25 @@ var article = (function($) {
             $(".dismiss").click();
 
             if (this_save_i == save_i) {
-                var message = jqXHR.responseJSON.message;
-                if(message != null) {
-                    fail_callback();
-                }
+                saving_status.notSaved();
+
+                fail_callback(messageFromXhr(jqXHR));
             }
         });
+    }
+
+    //TODO: Unuglify, plez
+    function messageFromXhr(xhr) {
+        if(xhr !== undefined && xhr !== null) {
+            if(xhr.responseJSON !== undefined &&
+                    xhr.responseJSON !== null) {
+                if(xhr.responseJSON.message !== undefined &&
+                        xhr.responseJSON.message !== null) {
+                    return xhr.responseJSON.message;
+                }
+            }
+        }
+        return null;
     }
 
     function submitPostForm(values, success_callback, error_callback) {
@@ -374,7 +390,7 @@ var article = (function($) {
     return {
         note_changed: noteArticleChanged,
         save: save,
-        publish: publish,
+        publish: innerPublish,
         unpublish: unpublish,
         isValid: isArticleValid
     };
