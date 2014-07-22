@@ -216,3 +216,29 @@
 .price-picker {
     text-align: right;
 }
+
+/* GROUP PICKER */
+.group.empty {
+    background: white !important;
+    color: #C82505 !important;
+    border: 1px dashed #C82505 !important;
+}
+.group.empty:after {
+    content: 'ADD GROUP' !important;
+}
+.group-pick {
+    background: #C82505;
+    color: white;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    cursor: pointer;
+    font-size: 0.7em;
+    white-space: nowrap;
+}
+.group-pick:hover {
+    color: inherit;
+    text-decoration: inherit;
+}
+.group-pick.no-group {
+    background: black;
+}

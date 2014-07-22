@@ -6,13 +6,11 @@ var tags = (function($) {
         makeTagsModifiable();
         addNewTag();
 
-        if(groupExists()) {
-            makeGroupEditable();
-        }
-        else {
+        if(!groupExists()) {
             addEmptyGroup();
-            makeGroupEditable();
         }
+
+        makeGroupEditable();
 
         if($main_tag.text() == "")
             $main_tag.addClass("empty");
@@ -45,7 +43,6 @@ var tags = (function($) {
             .addClass("edit-field")
             .focus();
 
-        makeTagAutocompleteable($tag);
         $tag.keydown(tagKeydown);
         setUpEditField($tag);
 
@@ -81,31 +78,6 @@ var tags = (function($) {
         setNextTag($new_tag);
 
         return $new_tag;
-    }
-
-    function makeTagAutocompleteable($tag){
-        $tag.autocomplete({
-            source: function( request, response ) {
-                $.getJSON("/tags", {
-                    term: request.term
-                }, response );
-            },
-            search: function() {
-                // custom minLength
-                var term = $(this).html();
-                if ( term.length < 1 ) {
-                    return false;
-                }
-            },
-            focus: function() {
-                // prevent value inserted on focus
-                return false;
-            },
-            select: function( event, ui ) {
-                $(this).html(ui.item.value);
-                return false;
-            }
-        });
     }
 
     function tagKeydown(event) {
@@ -183,8 +155,54 @@ var tags = (function($) {
     function makeGroupEditable() {
         $(".tags .group")
             .attr("href",null)
-            .addClass("edit-field")
-            .attr("contenteditable",true);
+            .click(showGroupSelector);
+    }
+
+    function showGroupSelector(e) {
+        e.preventDefault();
+        var groups = loadGroups(function(groups) {
+            var groups_list = renderGroups(groups);
+            $(".group-selector-modal")
+                .find(".modal-body")
+                    .html(groups_list)
+                .end()
+                .modal("show");
+
+            $(".group").addClass("empty");
+
+            $(".group-pick").click(function() {
+                var val = $(this).data("value");
+                $(".group-selector-modal").modal("hide");
+                $(".group").text(val);
+
+                if(val == "") {
+                    $(".group").addClass("empty");
+                }
+                else {
+                    $(".group").removeClass("empty");
+                }
+            });
+        });
+        return false;
+    }
+
+    function loadGroups(callback) {
+        $.ajax({
+            url: "/readers/self/groups",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                callback(data);
+            }
+        });
+    }
+
+    function renderGroups(groups) {
+        var html = '<a class="group-pick no-group" data-value="">none</a> ';
+        $.each(groups, function(i, g) {
+            html += '<a class="group-pick" data-value="'+g+'">'+g+'</a> ';
+        });
+        return html + '</div>';
     }
 
     function addEmptyGroup() {
