@@ -197,6 +197,11 @@ var article = (function($) {
         }
 
         //Message text
+        var $main_text = $("#content");
+        if($main_text.text().trim() == "") {
+            mainTextInvalid("You must write something before you can publish it.");
+            valid = false;
+        }
 
         return valid;
     }
@@ -210,6 +215,17 @@ var article = (function($) {
                        title: message
                    })
                    .tooltip("show");
+    }
+
+    function mainTextInvalid(message) {
+        $("#content").addClass("invalid")
+                     .tooltip("destroy")
+                     .tooltip({
+                        placement: "top",
+                        trigger: "manual",
+                        title: message
+                     })
+                     .tooltip("show");
     }
 
     function innerUnpublish() {

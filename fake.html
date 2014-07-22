@@ -294,6 +294,11 @@ $("#taglist").bind( "keydown", function( event ) {
 
       <article id="content" class="content edit-field empty">
       </article>
+      <script>
+        $("#content").keydown(function() {
+            $("#content").removeClass("invalid").tooltip("hide");
+        });
+      </script>
 
     </div>
     <script>
