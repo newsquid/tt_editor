@@ -6885,146 +6885,16 @@ define('scribe-plugin-sanitizer',[
 });
 
 //# sourceMappingURL=scribe-plugin-sanitizer.js.map;
-define('scribe-plugin-image-paragraphs',[],function(){
+define('scribe-plugin-tt-insert-image',[],function(){
 
-  
-
-  return function(mediaBarElement, addImageFunction){
+  return function(){
 
     return function(scribe){
 
       scribe.el.addEventListener('keyup', onInput);
-      //scribe.el.addEventListener('click', onInput);
-
-      function onInput(event){
-
-        scribe.transactionManager.run(function(){
-          insertHoverEvents();
-        });
-
-      }
-
-      function insertHoverEvents(){
-
-        var els = scribe.el.children;
-        for (var i = 0, len = els.length; i < len; i++){
-          var el = els[i];
-          if(el.outerHTML == "<p><br></p>"){
-            el.addEventListener("mouseover", function(){
-              var elem = this;
-              var bar = showMediaBar(elem).cloneNode(true); // Hacky way of removing past events
-
-              bar.addEventListener("mouseover", function(event) { showMediaBar(elem); });
-
-              bar.children[0].addEventListener("click", function(event) {
-                addImageFunction(event,elem);
-                hideMediaBar(elem);
-              });
-
-              mediaBarElement.parentNode.replaceChild(bar,mediaBarElement);
-              mediaBarElement = bar; // So that parent is not null on next pass.
-                                     // I totally didn't waste 10 minutes banging my head
-
-            });
-            el.addEventListener("mouseleave", function(){ hideMediaBar(this); });
-          }
-        }
-      }
-
-      function showMediaBar(element){
-        mediaBarElement.style.display = "block";
-
-        mediaBarElement.style.top = element.offsetTop + "px";
-        mediaBarElement.style.left = element.offsetLeft + "px";
-        mediaBarElement.style.position = 'absolute';
-
-        return mediaBarElement;
-      }
-
-      function hideMediaBar(element){
-        mediaBarElement.style.display = "none";
-      }
 
     };
   };
-});
-
-define('scribe-plugin-hover-toolbar',[],function(){
-
-  
-
-  return function(toolbarElement){
-
-    return function(scribe){
-      //scribe.el.addEventListener('mouseup', function(event){ selectionOn(falseOrEvent(event,toolbarIsClicked)); });
-      scribe.el.addEventListener('mouseup', selectionOn);
-      scribe.el.addEventListener('focusout', selectionOff);
-
-      function toolbarIsClicked(){
-        var selectionRect = selectedElement().getBoundingClientRect(),
-            toolbarRect = toolbarElement.getBoundingClientRect();
-
-        showToolbar(selectedElement());
-        return true;
-      }
-
-      function falseOrEvent(event,predicate){
-        if(predicate()){
-          return false;
-        } else {
-          return event;
-        }
-      }
-
-      function selectedElement(){
-        var selection = new scribe.api.Selection()
-        var selectedElement = selection.getContaining(function(element){ return element.nodeName !== "#text"; });
-        return selectedElement;
-      }
-
-      function selectionOn(event){
-        console.log(event.target);
-        if(event === false){
-          return;
-        }
-
-        var selection = new scribe.api.Selection();
-        // Only react if we actually select some text (a range)
-        if(selectedElement() && ((selection.range.endOffset - selection.range.startOffset) > 0)){
-
-          scribe.transactionManager.run(function(){
-          showToolbar(selectedElement());
-          })
-        } else {
-          selectionOff(event);
-        }
-
-      }
-
-      function selectionOff(event){
-        scribe.transactionManager.run(function(){
-          hideToolbar();
-        })
-      }
-
-      function showToolbar(element){
-        var rect = element.getBoundingClientRect();
-
-        toolbarElement.parentNode.style.position = "relative";
-
-        toolbarElement.style.position = "absolute";
-        toolbarElement.style.top = rect.top-rect.height*2 + "px";
-        toolbarElement.style.left = rect.left + "px";
-        toolbarElement.style.display = "block";
-
-        toolbarElement.focus();
-      }
-
-      function hideToolbar(){
-        toolbarElement.style.display = "none";
-      }
-    }
-  }
 });
 
 define('tt_editor',[ 'scribe',
@@ -7033,26 +6903,13 @@ define('tt_editor',[ 'scribe',
           'scribe-plugin-heading-command',
           'scribe-plugin-link-prompt-command',
           'scribe-plugin-sanitizer',
-          'scribe-plugin-image-paragraphs',
-          'scribe-plugin-hover-toolbar'],
+          'scribe-plugin-tt-insert-image'],
 
   function (Scribe, scribePluginBlockquoteCommand, scribePluginToolbar,
             scribePluginHeadingCommand, scribePluginLinkPromptCommand,
-            scribePluginSanitizer, scribePluginImageParagraphs,
-            scribePluginHoverToolbar) {
+            scribePluginSanitizer, scribePluginTTInsertImage) {
 
-  //scribe.use(scribePluginSanitizer({ tags: {
-  //  p: {},
-  //  b: {},
-  //  i: {},
-  //  br: {},
-  //  li: {},
-  //  h1: {},
-  //  h2: {},
-  //  a: {}
-  //}}));
-
-  return function(scribeElement,toolbarElement,mediabarElement,addImageFunction){
+  return function(scribeElement,toolbarElement){
 
     // Create an instance of Scribe
     var scribe = new Scribe(scribeElement);
@@ -7063,8 +6920,7 @@ define('tt_editor',[ 'scribe',
     scribe.use(scribePluginHeadingCommand(1));
     scribe.use(scribePluginLinkPromptCommand());
     scribe.use(scribePluginToolbar(toolbarElement));
-    //scribe.use(scribePluginHoverToolbar(toolbarElement));
-    scribe.use(scribePluginImageParagraphs(mediabarElement,addImageFunction));
+    script.use(scribePluginTTImageInsert());
 
     return {} // Public interface. OF NOTHINGNESS!!!!
   }

@@ -279,7 +279,7 @@ var scroll_amount = function() {
         <button data-command-name="blockquote" data-toggle="tooltip" data-placement="top" title="Quotation" style="font-size: 1.3em;">&ldquo;</button>
         <button data-command-name="linkPrompt" data-toggle="tooltip" data-placement="top" title="Link"><span class="glyphicon glyphicon-link"></span></button>
         <button data-command-name="insertUnorderedList" data-toggle="tooltip" data-placement="top" title="Insert unordered list"><span class="glyphicon glyphicon-list"></span></button>
-        <button data-command-name="addImage" data-toggle="tooltip" data-placement="top" title="Insert image"><span class="glyphicon glyphicon-picture"></span></button>
+        <button data-command-name="insertImage" data-toggle="tooltip" data-placement="top" title="Insert image"><span class="glyphicon glyphicon-picture"></span></button>
       </div>
       <script>
         $(".toolbar button").tooltip("hide");
@@ -316,14 +316,8 @@ var scroll_amount = function() {
 
           var scribeElement = document.querySelector('.content');
           var toolbarElement = document.querySelector('.toolbar');
-          var mediabarElement = document.getElementById('media-bar');
 
-          function addImage(event,element){
-            var image = document.getElementById("an-image");
-            element.parentNode.insertBefore(image,element);
-          }
-
-          var tte = new tt_editor(scribeElement,toolbarElement,mediabarElement,addImage);
+          var tte = new tt_editor(scribeElement,toolbarElement);
           console.log(tte);
 
       });
