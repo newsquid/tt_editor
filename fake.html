@@ -71,6 +71,16 @@
 
 <!---- BEGIN EDITOR ---->
 
+<!-- SCROLLY LIB -->
+<script>
+var scroll_amount = function() {
+    return Math.max(
+        $("body").scrollTop(),
+        -$(".site-header").offset().top
+    );
+};
+</script>
+
 <!-- 
     SAVING STATUS
     States: -, modified, saving, saved, publishing, published, not-saved, not-published.
@@ -78,7 +88,7 @@
 <div class="saving-status"></div>
 <script>
     $(document).ready(function() {
-        $("body").bind("scroll", function() {
+        $("body").bind("scroll resize", function() {
 
             /**
              * Check which ones work on which computarz
@@ -103,12 +113,8 @@
             //Ubuntu Chrome
             console.log("site-header-offset: "+(-$(".site-header").offset().top));
 
-            var scroll_amount = Math.max(
-                $("body").scrollTop(),
-                -$(".site-header").offset().top
-            );
 
-            $(".saving-status").css("top", Math.max(41 - scroll_amount,0) + "px");
+            $(".saving-status").css("top", Math.max(41 - scroll_amount(),0) + "px");
         });
     });
 </script>
@@ -266,19 +272,14 @@ $("#taglist").bind( "keydown", function( event ) {
                          .css("top", 0)
                          .css("left", 0);
 
-            var main_top_pos = $("#main").offset().top - $(".site-header").offset().top;
+            var main_top_pos = $("#content").offset().top - $(".site-header").offset().top;
             console.log("main_top_pos: "+main_top_pos);
 
-            $("body").bind("scroll", function() {
-                console.log("scrolly");
+            $("body").bind("scroll resize", function() {
+                var scrl = scroll_amount();
 
-                var scroll_amount = Math.max(
-                    $("body").scrollTop(),
-                    -$(".site-header").offset().top
-                );
-
-                if(scroll_amount > main_top_pos) {
-                   $(".toolbar").css("top", Math.max(scroll_amount - main_top_pos,0) + "px");
+                if(scrl > main_top_pos) {
+                   $(".toolbar").css("top", Math.max(scrl - main_top_pos,0) + "px");
                 }
             });
         });
