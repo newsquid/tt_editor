@@ -7,7 +7,7 @@ var saving_status = (function() {
     var $saving_status = $(".saving-status");
     
     var set_status = function(status) {
-        $saving_status.removeClass("modified saving saved not-saved publishing published not-published");
+        $saving_status.removeClass("modified saving saved not-saved publishing published not-published unpublishing unpublished not-unpublished");
         $saving_status.addClass(status);
     }
     
@@ -35,6 +35,15 @@ var saving_status = (function() {
         },
         notPublished: function() {
             set_status("not-published");
+        },
+        unpublishing: function() {
+            set_status("unpublishing");
+        },
+        unpublished: function() {
+            set_status("unpublished");
+        },
+        notUnpublished: function() {
+            set_status("not-unpublished");
         }
     };
 })();
@@ -70,7 +79,7 @@ var article = (function($) {
 
     function setUpPublishing() {
         $("#publish-button, #publish-changes-button").click(publish);
-        $("#unpublish-button").click(unpublish);
+        $("#unpublish-button").click(innerUnpublish);
         $("#discard-changes-button").click(showDiscardConfirmation);
     }
 
@@ -230,6 +239,7 @@ var article = (function($) {
 
     function innerUnpublish() {
         saving_status.unpublishing();
+        showUnpublishedHeader();
 
         submitPostForm({
             published: false
@@ -391,7 +401,7 @@ var article = (function($) {
         note_changed: noteArticleChanged,
         save: save,
         publish: innerPublish,
-        unpublish: unpublish,
+        unpublish: innerUnpublish,
         isValid: isArticleValid
     };
 

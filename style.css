@@ -96,7 +96,7 @@
 .saving-status.saved:before, .saving-status.published:before {
     background: #55B867;
 }
-.saving-status.not-saved, .saving-status.not-published {
+.saving-status.not-saved, .saving-status.not-published, .saving-status.not-unpublished {
     background: #D10000;
 }
 .saving-status.not-saved:after {
@@ -107,8 +107,32 @@
     content: 'Publishing failed :(';
     color: white;
 }
-.saving-status.not-saved:before, .saving-status.not-published:before {
+.saving-status.not-unpublished:after {
+    content: 'Unpublishing failed :(';
+    color: white;
+}
+.saving-status.not-saved:before, .saving-status.not-published:before, .saving-status.not-unpublished:before {
     background: #D10000;
+}
+.saving-status.unpublishing {
+    background: #5887E0;
+}
+.saving-status.unpublishing:after {
+    content: 'Unpublishing...';
+    color: white;
+}
+.saving-status.unpublishing:before {
+    background: #5887E0;
+}
+.saving-status.unpublished {
+    background: #2256B5;
+}
+.saving-status.unpublished:after {
+    content: 'Unpublishing...';
+    color: white;
+}
+.saving-status.unpublished:before {
+    background: #2256B5;
 }
 
 .publish-button, .settings-button {
