@@ -76,6 +76,42 @@
     States: -, modified, saving, saved, publishing, published, not-saved, not-published.
 -->
 <div class="saving-status"></div>
+<script>
+    $(document).ready(function() {
+        $("body").bind("scroll", function() {
+
+            /**
+             * Check which ones work on which computarz
+             */
+            console.log("article scrolly");
+
+            //Ubuntu Firefox
+            console.log("body: "+$("body").scrollTop());
+
+            console.log("site-header: "+$(".site-header").scrollTop());
+            console.log("document: "+$(document).scrollTop());
+            console.log("window: "+$(window).scrollTop());
+            console.log("html: "+$("html").scrollTop());
+
+            //Ubuntu Firefox
+            console.log("js-body: "+document.body.scrollTop);
+
+            console.log("js-document: "+document.documentElement.scrollTop);
+            console.log("js-window: "+window.pageYOffset);
+            console.log("body-offset: "+$("body").offset().top);
+
+            //Ubuntu Chrome
+            console.log("site-header-offset: "+(-$(".site-header").offset().top));
+
+            var scroll_amount = Math.max(
+                $("body").scrollTop(),
+                -$(".site-header").offset().top
+            );
+
+            $(".saving-status").css("top", Math.max(41 - scroll_amount,0) + "px");
+        });
+    });
+</script>
 
 <!--
     PUBLISH BUTTON
@@ -212,6 +248,7 @@ $("#taglist").bind( "keydown", function( event ) {
 <!-- MAIN TEXT -->
   <section class="g-body content-container">
     <div id="main" style="position:relative">
+
       <div class="toolbar" style="display:block" style="z-index:3000">
         <button data-command-name="bold" data-toggle="tooltip" data-placement="left" title="Bold"><span class="glyphicon glyphicon-bold"></span></button>
         <button data-command-name="italic" data-toggle="tooltip" data-placement="left" title="Italic"><span class="glyphicon glyphicon-italic"></span></button>
@@ -224,6 +261,27 @@ $("#taglist").bind( "keydown", function( event ) {
       </div>
       <script>
         $(".toolbar button").tooltip("hide");
+        $(document).ready(function() {
+            $(".toolbar").css("position", "relative")
+                         .css("top", 0)
+                         .css("left", 0);
+
+            var main_top_pos = $("#main").offset().top - $(".site-header").offset().top;
+            console.log("main_top_pos: "+main_top_pos);
+
+            $("body").bind("scroll", function() {
+                console.log("scrolly");
+
+                var scroll_amount = Math.max(
+                    $("body").scrollTop(),
+                    -$(".site-header").offset().top
+                );
+
+                if(scroll_amount > main_top_pos) {
+                   $(".toolbar").css("top", Math.max(scroll_amount - main_top_pos,0) + "px");
+                }
+            });
+        });
       </script>
 
       <article id="content" class="content edit-field empty">
