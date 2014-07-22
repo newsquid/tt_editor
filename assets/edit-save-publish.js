@@ -174,6 +174,44 @@ var article = (function($) {
         });
     }
 
+    /**
+     * Validates the article, checking that all the required fields
+     * have been filled. Returns boolean.
+     * Side-effect: marks invalid fields
+     */
+    function isArticleValid() {
+        var valid = true;
+
+        //Title
+        var $title = $("#title");
+        if($title.val().trim() == "") {
+            titleInvalid("You must fill in a title");
+            valid = false;
+        }
+
+        //Main tag
+        var $main_tag = $(".title h1");
+        if($main_tag.text() == "") {
+            tags.invalid($(".first-tag"), "You must fill in a main tag");
+            valid = false;
+        }
+
+        //Message text
+
+        return valid;
+    }
+
+    function titleInvalid(message) {
+        $("#title").addClass("invalid")
+                   .tooltip("destroy")
+                   .tooltip({
+                       placement: "top",
+                       trigger: "manual",
+                       title: message
+                   })
+                   .tooltip("show");
+    }
+
     function innerUnpublish() {
         $.d_modal("Unpublishing");
 
@@ -238,7 +276,10 @@ var article = (function($) {
             $(".dismiss").click();
 
             if (this_save_i == save_i) {
-                fail_callback(textStatus+errorThrown+": "+JSON.stringify(jqXHR));
+                var message = jqXHR.responseJSON.message;
+                if(message != null) {
+                    fail_callback();
+                }
             }
         });
     }
@@ -318,7 +359,8 @@ var article = (function($) {
         note_changed: noteArticleChanged,
         save: save,
         publish: publish,
-        unpublish: unpublish
+        unpublish: unpublish,
+        isValid: isArticleValid
     };
 
 })(jQuery);

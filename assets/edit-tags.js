@@ -1,4 +1,4 @@
-(function($) {
+var tags = (function($) {
 
     var $main_tag = $(".title h1");
 
@@ -59,9 +59,7 @@
     function removeTag() {
         $(this).parent(".tag").remove();
 
-        if($(".tag").length == 0){
-            setMainTag("");
-        }
+        setMainTag($(".tag:first").text());
 
         $(".next-tag").remove();
         addNewTag();
@@ -113,7 +111,7 @@
     function tagKeydown(event) {
         var $this_tag = $(this);
         
-        $this_tag.removeClass("invalid");
+        $this_tag.removeClass("invalid").tooltip("hide");
 
         if(event.which == 188 || event.which == 13) {
             if(tagWithTextExists($this_tag.text())) {
@@ -155,12 +153,11 @@
             .removeClass("edit-field")
             .removeClass("first-tag")
             .addClass("tag")
-            .attr("contenteditable","false");
+            .attr("contenteditable","false")
+            .unbind("keydown keyup keypress");
         makeTagModifiable($tag);
 
-        if ($(".tag").length == 1) {
-            setMainTag($tag.text());
-        }
+        setMainTag($(".tag:first").text());
         
         article.note_changed();
     }
@@ -194,11 +191,17 @@
         tagTooltip($tag, msg);
     }
     
-    function tagTooltip($tag, msg) {
-        $($tag).tooltip({
-            placement: "top",
-            title: msg,
-            trigger: "focus"
-        }).tooltip("show");
+    function tagTooltip($tag, message) {
+        console.log("tag msg: "+message);
+        $tag.tooltip("destroy")
+            .tooltip({
+                placement: "right",
+                trigger: "manual",
+                title: message
+            }).tooltip("show");
     }
+
+    return {
+        invalid: tagInvalid
+    };
 })(jQuery);
