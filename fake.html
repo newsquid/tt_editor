@@ -364,13 +364,28 @@ $("#taglist").bind( "keydown", function( event ) {
                 <h4 class="modal-title">Settings</h4>
             </div>
             <div class="modal-body">
-                <form action="http://demo.trunktrunk.org/posts/14" class="button_to" method="post"><div><input name="_method" type="hidden" value="delete" /><input class="btn btn-default" type="submit" value="Delete" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div></form>
-                <button class="btn btn-default" id="unpublish-button">Unpublish</button>
-                <button class="btn btn-primary" id="discard-changes-button">Discard changes since last publish</button>
-                <div class="price-box input-group">
-                  <input type="number" class="form-control edit-field" id="price" style="width: 90px;" step="0.01" min=0 value="0.0">
+                <div class="price-picker-box">
+                  <div class="price-label">
+                    Price (USD):
+                  </div>
+                  <div class="price-picker-container">
+                    <input type="number" class="price-picker settings-price-picker" style="width: 90px;" step="0.01" min=0 value="0.0">
+                  </div>
+                  <button class="btn btn-default settings-price-picker-confirm">Update price</button>
                 </div>
-                <button class="btn btn-primary" id="update-price-button">Update price</button>
+                <p>
+                    Go back to last published revision?
+                    <button class="btn btn-primary" id="discard-changes-button">Discard changes</button>
+                </p>
+                <p>
+                    Hide article from the public?
+                    <button class="btn btn-primary" id="unpublish-button">Unpublish</button>
+                </p>
+                <p>
+                    Completely remove article?
+                    <button class="btn btn-danger" id="delete-button">Delete</button>
+                    <form id="delete-form" action="http://demo.trunktrunk.org/posts/14" class="button_to" method="post"><input name="_method" type="hidden" value="delete" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></form>
+                </p>
             </div>
         </div>
     </div>
@@ -391,9 +406,12 @@ $("#taglist").bind( "keydown", function( event ) {
             </div>
             <div class="modal-body">
                 <p>Do you want to charge money for your article?</p>
-                <div class="form-group" style="text-align: center;">
-                    <div class="input-group" style="display: inline-block; text-align: left;">
-                        <input type="number" class="form-control edit-field" id="price" style="width: 100px;" step="0.01" min=0 value="0.0">
+                <div class="price-picker-box">
+                    <div class="price-label">
+                        Price (USD):
+                    </div>
+                    <div class="price-picker-container">
+                        <input type="number" class="price-picker publish-input-price" style="width: 100px;" step="0.01" min=0 value="0.0">
                     </div>
                 </div>
                 <p>You can change the price later, via the article's Settings menu.</p>
