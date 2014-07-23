@@ -7062,22 +7062,14 @@ define('scribe-plugin-tt-insert-image', [],function(){
   return function(){
     return function(scribe){
 
-        var TTInsertImageCommand = new scribe.api.Command("tt_insertImage");
+        var TTInsertImageCommand = new scribe.api.Command("insertHTML");
 
         TTInsertImageCommand.nodeName = 'IMG';
 
         TTInsertImageCommand.execute = function() {
-            alert("Here's a story, all about how");
-            alert("my life got flipped, turned upside down");
-
-            if(this.queryState()) {
-                var selection = new scribe.api.Selection();
-                console.log(selection);
-            }
-
             var imgLink = "http://gooel.com";
 
-            scribe.api.SimpleCommand.prototype.execute.call(this, imgLink);
+            scribe.api.SimpleCommand.prototype.execute.call(this, "</p><img src='"+imgLink+"'><p>");
         };
 
         TTInsertImageCommand.queryState = function() {

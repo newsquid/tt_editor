@@ -188,6 +188,10 @@
     display: inline-block;
     z-index: -2;
 }
+#content img {
+    width: 100%;
+    height: auto;
+}
 #main {
     margin-top: -5px !important;
 }
