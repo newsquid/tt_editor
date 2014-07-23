@@ -289,11 +289,11 @@ var scroll_amount = function() {
                          .css("top", 0)
                          .css("left", 0);
 
-            var main_top_pos = $("#content").offset().top - $(".site-header").offset().top;
-            console.log("main_top_pos: "+main_top_pos);
 
             $("body").bind("scroll resize", function() {
                 var scrl = scroll_amount();
+
+                var main_top_pos = $("#content").offset().top - $(".site-header").offset().top;
 
                 if(scrl > main_top_pos) {
                    $(".toolbar").css("top", Math.max(scrl - main_top_pos,0) + "px");
