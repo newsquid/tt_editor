@@ -6887,11 +6887,12 @@ define('scribe-plugin-sanitizer',[
 //# sourceMappingURL=scribe-plugin-sanitizer.js.map;
 define('scribe-plugin-tt-insert-image',[],function(){
 
+  
+
   return function(){
 
     return function(scribe){
 
-      scribe.el.addEventListener('keyup', onInput);
 
     };
   };
@@ -6907,7 +6908,7 @@ define('tt_editor',[ 'scribe',
 
   function (Scribe, scribePluginBlockquoteCommand, scribePluginToolbar,
             scribePluginHeadingCommand, scribePluginLinkPromptCommand,
-            scribePluginSanitizer, scribePluginTTInsertImage) {
+            scribePluginSanitizer, scribePluginTTInsertImageCommand) {
 
   return function(scribeElement,toolbarElement){
 
@@ -6920,7 +6921,7 @@ define('tt_editor',[ 'scribe',
     scribe.use(scribePluginHeadingCommand(1));
     scribe.use(scribePluginLinkPromptCommand());
     scribe.use(scribePluginToolbar(toolbarElement));
-    script.use(scribePluginTTImageInsert());
+    scribe.use(scribePluginTTInsertImageCommand());
 
     return {} // Public interface. OF NOTHINGNESS!!!!
   }

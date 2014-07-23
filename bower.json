@@ -8,8 +8,7 @@
       "scribe-plugin-heading-command": "*",
       "scribe-plugin-link-prompt-command": "*",
       "scribe-plugin-sanitizer": "*",
-      "scribe-plugin-image-paragraphs": "git://github.com/newsquid/scribe-plugin-image-paragraphs/",
-      "scribe-plugin-hover-toolbar": "git://github.com/newsquid/scribe-plugin-hover-toolbar/",
+      "scribe-plugin-tt-insert-image": "git://github.com/newsquid/scribe-plugin-tt-insert-image/",
       "almond": "*"
   },
   "ignore": [
