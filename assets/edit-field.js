@@ -7,7 +7,7 @@ var setUpEditField = (function($) {
     }
 
     function editFieldKeyup() {
-        if($(this).text() == "") {
+        if($(this).text().trim() == "") {
             $(this).addClass("empty");
             $(this).text("");
         }

@@ -3,16 +3,58 @@ var publish_settings = {
     is_published: false
 };
 
+var saving_status = (function() {
+    var $saving_status = $(".saving-status");
+    
+    var set_status = function(status) {
+        $saving_status.removeClass("modified saving saved not-saved publishing published not-published unpublishing unpublished not-unpublished");
+        $saving_status.addClass(status);
+    }
+    
+    return {
+        blank: function() {
+            set_status("");
+        },
+        modified: function() {
+            set_status("modified");
+        },
+        saving: function() {
+            set_status("saving");
+        },
+        saved: function() {
+            set_status("saved");
+        },
+        notSaved: function() {
+            set_status("not-saved");
+        },
+        publishing: function() {
+            set_status("publishing");
+        },
+        published: function() {
+            set_status("published");
+        },
+        notPublished: function() {
+            set_status("not-published");
+        },
+        unpublishing: function() {
+            set_status("unpublishing");
+        },
+        unpublished: function() {
+            set_status("unpublished");
+        },
+        notUnpublished: function() {
+            set_status("not-unpublished");
+        }
+    };
+})();
+
 //Merge into publish settings
 function setUpSaveAndPublish(settings) {
     publish_settings = settings;
 }
 
 var article = (function($) {
-
-    var $published_header = $(".editor-bar .published");
-    var $unpublished_header = $(".editor-bar .unpublished");
-
+    var $publish_button = $(".publish-button");
     $(document).ready(function() {
         if(publish_settings.is_published) {
             showPublishedHeader();
@@ -26,30 +68,27 @@ var article = (function($) {
     });
 
     function setUpSaving() {
-        $(".edit-article").delegate(".edit-field:not(.group)","keyup",function(e) {
-            if (!isArrowKey(e.keyCode))
+        $(".edit-article").delegate(".edit-field:not(.group):not(.first-tag):not(next-tag)","keyup",function(e) {
+            if (!isArrowKey(e.keyCode)) {
                 noteArticleChanged();
+            }
         });
-
-        $("#price").bind('change',noteArticleChanged);
 
         intervalSave(4000, save_success, save_failure);
     }
 
     function setUpPublishing() {
         $("#publish-button, #publish-changes-button").click(publish);
-        $("#unpublish-button").click(unpublish);
+        $("#unpublish-button").click(innerUnpublish);
         $("#discard-changes-button").click(showDiscardConfirmation);
     }
 
     function showPublishedHeader() {
-        $unpublished_header.hide();
-        $published_header.show();
+        $publish_button.addClass("published");
     }
 
     function showUnpublishedHeader() {
-        $published_header.hide();
-        $unpublished_header.show();
+        $publish_button.removeClass("published");
     }
 
     function isArrowKey(keyCode) {
@@ -71,8 +110,8 @@ var article = (function($) {
         save(function() {
             save_success();
             innerUnpublish();
-        }, function() {
-            save_failure();
+        }, function(message) {
+            save_failure(message);
             showPublishedHeader();
         });
     }
@@ -89,6 +128,7 @@ var article = (function($) {
         setTimeout(function () {
             if (article_updated) {
                 article_updated = false;
+                
                 save(success_callback, fail_callback);
             }
             intervalSave(time, success_callback, fail_callback);
@@ -97,61 +137,116 @@ var article = (function($) {
 
     function save_success() {
         if (!article_updated) {
-            setMessage("All changes saved!");
+            saving_status.saved();
         }
     }
 
     function save_failure(message) {
         if (!article_updated) {
-            var text = "Save failed for unknown reason.";
-            if (message !== undefined) {
-                text = message;
-            }
-
-            $.d_modal(text);
-            setMessage("Save failed :(");
+            saving_status.notSaved();
         }
     }
 
-    function innerPublish() {
-        setMessage("Publishing...");
+    function publish_success() {
+        if (!article_updated) {
+            saving_status.published();
+        }
+    }
+
+    function publish_failure(message) {
+        if (!article_updated) {
+            saving_status.notPublished();
+        }
+    }
+
+    function innerPublish(success_callback, failure_callback) {
+        //Default callbacks
+        if(typeof success_callback === "undefined") success_callback = function() {};
+        if(typeof fail_callback === "undefined") fail_callback = function() {};
+
+        saving_status.publishing();
 
         submitPostForm({
             published: true
         }, function(d, s, jqXHR) {
             setPublishedNow();
-            setMessage("Published");
-            if(jqXHR.responseJSON !== null){
-                console.log(jqXHR.responseJSON)
-                var redirect = jqXHR.responseJSON.redirect
-                if(redirect !== undefined){
-                    document.location.replace(redirect);
-                }
-            }
+            saving_status.published();
+
+            success_callback();
         }, function(jqXHR, text, error) {
-            var message = jqXHR.responseJSON.message 
+            console.log("Failed to publish.");
+            console.log(jqXHR);
 
-            if(message === undefined) {
-                $.d_modal(error);
-            } else {
-                $.d_modal(message);
-            }
+            saving_status.notPublished();
 
-
-            setMessage("Publishing failed :(");
+            fail_callback();
         });
     }
 
+    /**
+     * Validates the article, checking that all the required fields
+     * have been filled. Returns boolean.
+     * Side-effect: marks invalid fields
+     */
+    function isArticleValid() {
+        var valid = true;
+
+        //Title
+        var $title = $("#title");
+        if($title.val().trim() == "") {
+            titleInvalid("You must fill in a title");
+            valid = false;
+        }
+
+        //Main tag
+        var $main_tag = $(".title h1");
+        if($main_tag.text() == "") {
+            tags.invalid($(".first-tag"), "You must fill in a main tag");
+            valid = false;
+        }
+
+        //Message text
+        var $main_text = $("#content");
+        if($main_text.text().trim() == "") {
+            mainTextInvalid("You must write something before you can publish it.");
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    function titleInvalid(message) {
+        $("#title").addClass("invalid")
+                   .tooltip("destroy")
+                   .tooltip({
+                       placement: "top",
+                       trigger: "manual",
+                       title: message
+                   })
+                   .tooltip("show");
+    }
+
+    function mainTextInvalid(message) {
+        $("#content").addClass("invalid")
+                     .tooltip("destroy")
+                     .tooltip({
+                        placement: "top",
+                        trigger: "manual",
+                        title: message
+                     })
+                     .tooltip("show");
+    }
+
     function innerUnpublish() {
-        setMessage("Unpublishing...");
+        saving_status.unpublishing();
+        showUnpublishedHeader();
 
         submitPostForm({
             published: false
         }, function(d, s, jqXHR) {
-            setMessage("Unpublished");
+            saving_status.unpublished();
         }, function(jqXHR, text, error) {
-            $.d_modal(error);
-            setMessage("Unpublishing failed :(");
+            saving_status.notUnpublished();
             showPublishedHeader();
         });
     }
@@ -166,51 +261,69 @@ var article = (function($) {
     }
 
     function dateString(date) {
-        return twoDigits(date.getHours()) + ":" + twoDigits(date.getMinutes()) +
-            " " + twoDigits(date.getDate()) + "-" + twoDigits(date.getMonth()) + "-" + date.getFullYear();
+        return twoDigits(date.getHours()) + ":" +
+            twoDigits(date.getMinutes()) + " " +
+            twoDigits(date.getDate()) + "-" +
+            twoDigits(date.getMonth()) + "-" +
+            date.getFullYear();
     }
 
     function twoDigits(digits) {
         return digits < 10 ? "0" + digits : digits;
     }
 
-    function setMessage(str) {
-        $(".saving-status").text(str);
-    }
-
     /**
-     * Saves the form. calls success_callback on success, fail_callback on error.
+     * Saves the form. calls success_callback on success, fail_callback
+     * on error.
      */
     function save(success_callback, fail_callback) {
         //Default callbacks
-        if(typeof success_callback === "undefined") success_callback = save_success;
-        if(typeof fail_callback === "undefined") fail_callback = save_failure;
+        if(typeof success_callback === "undefined") success_callback = function() {};
+        if(typeof fail_callback === "undefined") fail_callback = function() {};
 
         var this_save_i = ++save_i;
+        
+        saving_status.saving();
 
         submitPostForm({
             tag_list: tagsAsCommaSeparatedString(),
             channel: $("#channel").val(),
             published: "noop",
-            price: $("#price").val(),
+            price: $(".settings-price-picker").val(),
             group: $(".group").text(),
             main_img_caption: $("#main_img_caption").text(),
             title: $("#title").val(),
             content: cleanEditorHtml($("#content").html())
         }, function (d, textStatus, jqXHR) {
             if (this_save_i == save_i) {
+                saving_status.saved();
+
                 success_callback();
             }
         }, function (jqXHR, textStatus, errorThrown) {
-            message = JSON.parse(jqXHR.responseText).message
-
             // Clear previous errors
-            $(".dismiss").click()
+            $(".dismiss").click();
 
             if (this_save_i == save_i) {
-                fail_callback(message);
+                saving_status.notSaved();
+
+                fail_callback(messageFromXhr(jqXHR));
             }
         });
+    }
+
+    //TODO: Unuglify, plez
+    function messageFromXhr(xhr) {
+        if(xhr !== undefined && xhr !== null) {
+            if(xhr.responseJSON !== undefined &&
+                    xhr.responseJSON !== null) {
+                if(xhr.responseJSON.message !== undefined &&
+                        xhr.responseJSON.message !== null) {
+                    return xhr.responseJSON.message;
+                }
+            }
+        }
+        return null;
     }
 
     function submitPostForm(values, success_callback, error_callback) {
@@ -252,7 +365,7 @@ var article = (function($) {
 
     function noteArticleChanged() {
         article_updated = true;
-        setMessage("Content modified.");
+        saving_status.modified();
     }
 
     function discardChanges(discard_link) {
@@ -263,7 +376,7 @@ var article = (function($) {
                 location.replace(d.redirect);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                setMessage("Discard failed.");
+                $.d_modal("Discard failed.");
                 $.d_modal(errorThrown);
             }
         });
@@ -287,8 +400,9 @@ var article = (function($) {
     return {
         note_changed: noteArticleChanged,
         save: save,
-        publish: publish,
-        unpublish: unpublish
+        publish: innerPublish,
+        unpublish: innerUnpublish,
+        isValid: isArticleValid
     };
 
 })(jQuery);
