@@ -10,7 +10,7 @@ define([ 'scribe',
             scribePluginHeadingCommand, scribePluginLinkPromptCommand,
             scribePluginSanitizer, scribePluginTTInsertImageCommand) {
 
-  return function(scribeElement,toolbarElement){
+  return function(scribeElement,toolbarElement,loadImageFunction){
 
     // Create an instance of Scribe
     var scribe = new Scribe(scribeElement);
@@ -20,7 +20,7 @@ define([ 'scribe',
     scribe.use(scribePluginHeadingCommand(2));
     scribe.use(scribePluginHeadingCommand(1));
     scribe.use(scribePluginLinkPromptCommand());
-    scribe.use(scribePluginTTInsertImageCommand());
+    scribe.use(scribePluginTTInsertImageCommand(loadImageFunction));
     scribe.use(scribePluginToolbar(toolbarElement));
 
     return {} // Public interface. OF NOTHINGNESS!!!!

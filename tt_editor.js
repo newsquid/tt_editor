@@ -7059,7 +7059,7 @@ define('scribe-plugin-tt-insert-image', [],function(){
 
   
 
-  return function(){
+  return function(loadImageUrl){
     return function(scribe){
 
         var TTInsertImageCommand = new scribe.api.Command("insertHTML");
@@ -7067,16 +7067,18 @@ define('scribe-plugin-tt-insert-image', [],function(){
         TTInsertImageCommand.nodeName = 'IMG';
 
         TTInsertImageCommand.execute = function() {
-            var imgLink = "http://gooel.com";
-
-            scribe.api.SimpleCommand.prototype.execute.call(this, "</p><img src='"+imgLink+"'><p>");
+            var thisInsertImageCommand = this;
+            
+            loadImageUrl(function(imageUrl) {
+                scribe.api.SimpleCommand.prototype.execute.call(this, "</p><img src='"+imgLink+"'><p>");
+            });
         };
 
         TTInsertImageCommand.queryState = function() {
            var selection = new scribe.api.Selection();
            return !! selection.getContaining(function(node) {
                return node.nodeName == this.nodeName;
-           }).bind(this);
+           }.bind(this));
         };
 
         scribe.commands.tt_insertImage = TTInsertImageCommand;
@@ -7097,7 +7099,7 @@ define('tt_editor',[ 'scribe',
             scribePluginHeadingCommand, scribePluginLinkPromptCommand,
             scribePluginSanitizer, scribePluginTTInsertImageCommand) {
 
-  return function(scribeElement,toolbarElement){
+  return function(scribeElement,toolbarElement,loadImageFunction){
 
     // Create an instance of Scribe
     var scribe = new Scribe(scribeElement);
@@ -7107,7 +7109,7 @@ define('tt_editor',[ 'scribe',
     scribe.use(scribePluginHeadingCommand(2));
     scribe.use(scribePluginHeadingCommand(1));
     scribe.use(scribePluginLinkPromptCommand());
-    scribe.use(scribePluginTTInsertImageCommand());
+    scribe.use(scribePluginTTInsertImageCommand(loadImageFunction));
     scribe.use(scribePluginToolbar(toolbarElement));
 
     return {} // Public interface. OF NOTHINGNESS!!!!

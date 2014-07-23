@@ -321,8 +321,13 @@ var scroll_amount = function() {
 
           var scribeElement = document.querySelector('.content');
           var toolbarElement = document.querySelector('.toolbar');
+          var loadImageFunction = function(callback) {
+              $("#post_media").unbind("change");
+              $("#post_media").trigger_cropping({}, callback);
+              $("#post_media").click();
+          };
 
-          var tte = new tt_editor(scribeElement,toolbarElement);
+          var tte = new tt_editor(scribeElement,toolbarElement,loadImageFunction);
           console.log(tte);
 
       });
@@ -363,8 +368,6 @@ var scroll_amount = function() {
       <input id="post_media" name="post[media]" type="file" />
       <input id="post_type" name="post[type]" type="hidden" value="image" />
       <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
-      <button class="trigger" id="imgbutton" name="button" type="submit">insert Image</button>
-      <input name="commit" type="submit" value="Update Post" />
     </form>
 </div>
 

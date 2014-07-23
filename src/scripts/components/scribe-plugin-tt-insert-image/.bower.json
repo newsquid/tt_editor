@@ -11,11 +11,11 @@
     "src"
   ],
   "homepage": "https://github.com/newsquid/scribe-plugin-tt-insert-image",
-  "_release": "7786eb277a",
+  "_release": "2870cd8dcd",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "7786eb277ac7ba8d4591ec66af1895a6b558a67e"
+    "commit": "2870cd8dcd2d3af15fa9a546384345d24167022b"
   },
   "_source": "git://github.com/newsquid/scribe-plugin-tt-insert-image.git",
   "_target": "*",

@@ -2,7 +2,7 @@ define('scribe-plugin-tt-insert-image', function(){
 
   'use strict';
 
-  return function(){
+  return function(loadImageUrl){
     return function(scribe){
 
         var TTInsertImageCommand = new scribe.api.Command("insertHTML");
@@ -10,16 +10,18 @@ define('scribe-plugin-tt-insert-image', function(){
         TTInsertImageCommand.nodeName = 'IMG';
 
         TTInsertImageCommand.execute = function() {
-            var imgLink = "http://gooel.com";
-
-            scribe.api.SimpleCommand.prototype.execute.call(this, "</p><img src='"+imgLink+"'><p>");
+            var thisInsertImageCommand = this;
+            
+            loadImageUrl(function(imageUrl) {
+                scribe.api.SimpleCommand.prototype.execute.call(this, "</p><img src='"+imgLink+"'><p>");
+            });
         };
 
         TTInsertImageCommand.queryState = function() {
            var selection = new scribe.api.Selection();
            return !! selection.getContaining(function(node) {
                return node.nodeName == this.nodeName;
-           }).bind(this);
+           }.bind(this));
         };
 
         scribe.commands.tt_insertImage = TTInsertImageCommand;
