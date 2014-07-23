@@ -177,16 +177,16 @@ var scroll_amount = function() {
         <input id="main_image_form_file" name="post[media]" type="file" />
         <input id="post_type" name="post[type]" type="hidden" value="main_image" />
         <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
+</form>
 
-        <img src="http://demo.trunktrunk.org/assets/image_button_article_2x.png" class="main-img trigger" id="main_image">
-        <input name="commit" type="submit" value="Update Post" />
-</form>    <script>
+<div class="main-image-container empty">
+    <div>
+        <img src="" class="main-img" id="main_image">
+    <script>
         $(document).ready(function() {
-            $("#main_image_form").submit(function(e) {
-                e.preventDefault();
-                return false;
+            $(".main-image-container > div").click(function() {
+                $("#main_image_form_file").click();
             });
-
             $("#main_image_form_file").trigger_cropping({
                 scaleWidth: 960,
                 aspectRatio: 16/9
@@ -194,6 +194,8 @@ var scroll_amount = function() {
                 $("#main_image")
                     .attr("src", img_src)
                     .css("opacity", 0.5);
+
+                $(".main-image-container").removeClass("empty");
 
                 var media_data = base64_to_blob(img_src);
 
@@ -214,6 +216,8 @@ var scroll_amount = function() {
             });
         });
     </script>
+    </div>
+</div>
 
     <figure>
       <figcaption contenteditable="true" id="main_img_caption" class="form-element edit-field">
@@ -327,7 +331,6 @@ var scroll_amount = function() {
 <!-- END MAIN TEXT -->
 
 <!-- PAGE-SPECIFIC JS INCLUDES -->
-<script data-turbolinks-track="true" src="assets/hiddenform.edit.js?body=1"></script>
 <!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-field.js?body=1"></script>
 <!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-tags.js?body=1"></script>
 <!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-save-publish.js?body=1"></script>
