@@ -137,6 +137,7 @@ var scroll_amount = function() {
 
     $(".publish-button").click(function() {
         $(".publish-price-picker").val(article_price);
+
         if(article.isValid()) {
             article.save();
             $("#publish-modal").modal("show");
@@ -407,7 +408,9 @@ var scroll_amount = function() {
 </div>
 <script>
     $(".settings-price-picker-confirm").click(function() {
-        article.save();
+        if(priceValid()) {
+            article.save();
+        }
     });
 </script>
      
@@ -440,13 +443,33 @@ var scroll_amount = function() {
     </div>
 </div>
 <script>
+    function priceValid() {
+        if($(".settings-price-picker").val() >= 0) {
+            return true;
+        }
+        else {
+            $(".price-picker")
+                .addClass("invalid")
+                .tooltip({
+                    placement: "right",
+                    trigger: "manual",
+                    title: "Price cannot be negative!"
+                })
+                .tooltip("show");
+
+            return false;
+        }
+    }
+
     $(document).ready(function() {
         $("#confirm-publish").click(function() {
-            article.publish(function() {
-                $("#publish-modal").modal("hide");
-                article_price = $(".publish-price-picker").val();
-                $("#post-publish-modal").modal("show");
-            });
+            if(priceValid()) {
+                article.publish(function() {
+                    $("#publish-modal").modal("hide");
+                    article_price = $(".publish-price-picker").val();
+                    $("#post-publish-modal").modal("show");
+                });
+            }
         });
 
         /**
@@ -454,6 +477,7 @@ var scroll_amount = function() {
          * one, and vice versa
          */
         $(".publish-price-picker, .settings-price-picker").change(function() {
+            $(".price-picker").tooltip("destroy").removeClass("invalid");
             $(".publish-price-picker, .settings-price-picker").val($(this).val());
         });
     });

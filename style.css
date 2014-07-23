@@ -4,7 +4,11 @@
     transition: border 1s;
     border: 0px solid red !important;
 }
-.edit-field.invalid {
+.price-picker {
+    -moz-transition: border 1s;
+    transition: border 1s;
+}
+.edit-field.invalid, .price-picker.invalid {
     border: 6px solid red !important;
 }
 
