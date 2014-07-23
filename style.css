@@ -217,6 +217,16 @@
     text-align: right;
 }
 
+/* CURSOR: TEXT */
+#title, #content {
+    cursor: text;
+}
+
+/* GROUPS AND TAGS */
+.tags .next-tag, .tags .first-tag {
+    cursor: text;
+}
+
 /* GROUP PICKER */
 .group.empty {
     background: white !important;
@@ -224,7 +234,7 @@
     border: 1px dashed #C82505 !important;
 }
 .group.empty:after {
-    content: 'ADD GROUP' !important;
+    content: 'NO GROUP' !important;
 }
 .group-pick {
     background: #C82505;
