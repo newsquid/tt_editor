@@ -274,7 +274,7 @@
     cursor: pointer;
 }
 .main-image-container.empty > div {
-    border-radius: 1%;
+    border-radius: 8px;
     border: 4px dashed #676767;
 }
 .main-image-container.empty .main-img {
