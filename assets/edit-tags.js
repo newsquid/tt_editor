@@ -30,8 +30,9 @@ var tags = (function($) {
     }
 
     function setNextTag($tag) {
-        if(!$tag.hasClass("next-tag"))
-            $(".next-tag").remove();
+        if(!$tag.hasClass("next-tag")) {
+            $(".next-tag").tooltip("hide").remove();
+        }
 
         $tag.find('.glyphicon').remove();
 
@@ -54,11 +55,11 @@ var tags = (function($) {
     }
 
     function removeTag() {
-        $(this).parent(".tag").remove();
+        $(this).parent(".tag").tooltip("hide").remove();
 
         setMainTag($(".tag:first").text());
 
-        $(".next-tag").remove();
+        $(".next-tag").tooltip("hide").remove();
         addNewTag();
 
         article.note_changed();
