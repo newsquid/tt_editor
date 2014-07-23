@@ -1,6 +1,8 @@
 #TT-editor
 The editor for [TrunkTrunk](http://trunktrunk.org)
 
+**NOTE:** `tt_editor.js` is built from `src/scripts/tt_editor.js`. Make sure you edit the right file.
+
 ## Usage
 
 See index.html for example usage. In general, include "tt_editor.js"
