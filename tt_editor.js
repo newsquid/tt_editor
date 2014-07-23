@@ -2600,23 +2600,73 @@ define('lodash-amd/modern/collections/toArray',['../objects/isString', '../inter
   return toArray;
 });
 
+define('scribe-common/src/element',['lodash-amd/modern/collections/contains'], function (contains) {
+
+  
+
+  // TODO: not exhaustive?
+  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H1',
+                           'H2', 'H3', 'H4', 'H5', 'H6'];
+  function isBlockElement(node) {
+    return contains(blockElementNames, node.nodeName);
+  }
+
+  function isSelectionMarkerNode(node) {
+    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
+  }
+
+  function unwrap(node, childNode) {
+    while (childNode.childNodes.length > 0) {
+      node.insertBefore(childNode.childNodes[0], childNode);
+    }
+    node.removeChild(childNode);
+  }
+
+  return {
+    isBlockElement: isBlockElement,
+    isSelectionMarkerNode: isSelectionMarkerNode,
+    unwrap: unwrap
+  };
+
+});
+
+define('scribe-common/src/node',[], function () {
+
+  
+
+  function isEmptyTextNode(node) {
+    return (node.nodeType === Node.TEXT_NODE && node.textContent === '');
+  }
+
+  function insertAfter(newNode, referenceNode) {
+    return referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+  }
+
+  function removeNode(node) {
+    return node.parentNode.removeChild(node);
+  }
+
+  return {
+    isEmptyTextNode: isEmptyTextNode,
+    insertAfter: insertAfter,
+    removeNode: removeNode
+  };
+
+});
+
 define('dom-observer',[
   'lodash-amd/modern/arrays/flatten',
-  'lodash-amd/modern/collections/toArray'
+  'lodash-amd/modern/collections/toArray',
+  'scribe-common/src/element',
+  'scribe-common/src/node'
 ], function (
   flatten,
-  toArray
+  toArray,
+  elementHelpers,
+  nodeHelpers
 ) {
 
   function observeDomChanges(el, callback) {
-    function notEmptyTextNode(node) {
-      return ! (node.nodeType === Node.TEXT_NODE && node.textContent === '');
-    }
-
-    function notSelectionMarkerNode(node) {
-      return ! (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
-    }
-
     function includeRealMutations(mutations) {
       var allChangedNodes = flatten(mutations.map(function(mutation) {
         var added   = toArray(mutation.addedNodes);
@@ -2625,12 +2675,11 @@ define('dom-observer',[
       }));
 
       var realChangedNodes = allChangedNodes.
-        filter(notEmptyTextNode).
-        filter(notSelectionMarkerNode);
+        filter(function(n) { return ! nodeHelpers.isEmptyTextNode(n); }).
+        filter(function(n) { return ! elementHelpers.isSelectionMarkerNode(n); });
 
       return realChangedNodes.length > 0;
     }
-
 
     // Flag to avoid running recursively
     var runningPostMutation = false;
@@ -2863,7 +2912,9 @@ define('plugins/core/events',[
       }
 
       /**
-       * Run formatters on paste
+       * We have to hijack the paste event to ensure it uses
+       * `scribe.insertHTML`, which executes the Scribe version of the command
+       * and also runs the formatters.
        */
 
       /**
@@ -2880,6 +2931,7 @@ define('plugins/core/events',[
           event.preventDefault();
 
           if (contains(event.clipboardData.types, 'text/html')) {
+
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
             scribe.insertPlainText(event.clipboardData.getData('text/plain'));
@@ -2915,7 +2967,7 @@ define('plugins/core/events',[
 
           // Wait for the paste to happen (next loop?)
           setTimeout(function () {
-            data = bin.innerHTML;
+            var data = bin.innerHTML;
             bin.parentNode.removeChild(bin);
 
             // Restore the caret position
@@ -2945,11 +2997,10 @@ define('plugins/core/formatters/html/replace-nbsp-chars',[],function () {
 
   return function () {
     return function (scribe) {
-      var nbspChar = '&nbsp;|\xA0';
-      var nbspCharRegExp = new RegExp(nbspChar, 'g');
+      var nbspCharRegExp = /(\s|&nbsp;)+/g;
 
       // TODO: should we be doing this on paste?
-      scribe.registerHTMLFormatter('normalize', function (html) {
+      scribe.registerHTMLFormatter('export', function (html) {
         return html.replace(nbspCharRegExp, ' ');
       });
     };
@@ -3045,34 +3096,9 @@ define('lodash-amd/modern/arrays/last',['../functions/createCallback', '../inter
   return last;
 });
 
-define('api/element',['lodash-amd/modern/collections/contains'], function (contains) {
-
-  
-
-  // TODO: not exhaustive?
-  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H1',
-                           'H2', 'H3', 'H4', 'H5', 'H6'];
-  function isBlockElement(node) {
-    return contains(blockElementNames, node.nodeName);
-  }
-
-  function unwrap(node, childNode) {
-    while (childNode.childNodes.length > 0) {
-      node.insertBefore(childNode.childNodes[0], childNode);
-    }
-    node.removeChild(childNode);
-  }
-
-  return {
-    isBlockElement: isBlockElement,
-    unwrap: unwrap
-  };
-
-});
-
 define('plugins/core/formatters/html/enforce-p-elements',[
   'lodash-amd/modern/arrays/last',
-  '../../../../api/element'
+  'scribe-common/src/element'
 ], function (
   last,
   element
@@ -3183,38 +3209,51 @@ define('plugins/core/formatters/html/enforce-p-elements',[
 
 });
 
-define('plugins/core/formatters/html/ensure-selectable-containers',[],function () {
+define('plugins/core/formatters/html/ensure-selectable-containers',[
+    'scribe-common/src/element',
+    'lodash-amd/modern/collections/contains'
+  ], function (
+    element,
+    contains
+  ) {
 
   /**
-   * Chrome and Firefox: Block-level elements like `<p>` or `<li>`
-   * need to contain either text or a `<br>` to remain selectable.
+   * Chrome and Firefox: All elements need to contain either text or a `<br>` to
+   * remain selectable. (Unless they have a width and height explicitly set with
+   * CSS(?), as per: http://jsbin.com/gulob/2/edit?html,css,js,output)
    */
 
   
 
-  function containsChild(node, elementType) {
-    // FIXME: do we need to recurse further down?
-    for (var n = node.firstChild; n; n = n.nextSibling) {
-      if (n.tagName === elementType) {
-        return true;
-      }
-    }
-
-    return false;
-  }
+  // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
+  var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
 
   function traverse(parentNode) {
-    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
-    var node = treeWalker.firstChild();
+    // Instead of TreeWalker, which gets confused when the BR is added to the dom,
+    // we recursively traverse the tree to look for an empty node that can have childNodes
+
+    var node = parentNode.firstElementChild;
+
+    function isEmpty(node) {
+      return node.children.length === 0
+        || (node.children.length === 1
+            && element.isSelectionMarkerNode(node.children[0]));
+    }
 
     while (node) {
-      // Find any block-level container that contains neither text nor a <br>
-      if ((node.nodeName === 'P' || node.nodeName === 'LI') &&
-          (node.textContent === '') &&
-          (! containsChild(node, 'BR'))) {
-        node.appendChild(document.createElement('br'));
+      if (!element.isSelectionMarkerNode(node)) {
+        // Find any node that contains no child *elements*, or just contains
+        // whitespace, and is not self-closing
+        if (isEmpty(node) &&
+          node.textContent.trim() === '' &&
+          !contains(html5VoidElements, node.nodeName))
+        {
+          node.appendChild(document.createElement('br'));
+        } else if (node.children.length > 0) {
+          traverse(node);
+        }
       }
-      node = treeWalker.nextSibling();
+      node = node.nextElementSibling;
     }
   }
 
@@ -3563,7 +3602,7 @@ define('plugins/core/patches/commands/indent',[],function () {
 
 });
 
-define('plugins/core/patches/commands/insert-html',['../../../../api/element'], function (element) {
+define('plugins/core/patches/commands/insert-html',['scribe-common/src/element'], function (element) {
 
   
 
@@ -3625,7 +3664,8 @@ define('plugins/core/patches/commands/insert-html',['../../../../api/element'], 
 
 });
 
-define('plugins/core/patches/commands/insert-list',['../../../../api/element'], function (element) {
+define('plugins/core/patches/commands/insert-list',['scribe-common/src/element',
+        'scribe-common/src/node'], function (element, nodeHelpers) {
 
   
 
@@ -3643,34 +3683,58 @@ define('plugins/core/patches/commands/insert-list',['../../../../api/element'], 
           scribe.api.CommandPatch.prototype.execute.call(this, value);
 
           if (this.queryState()) {
-            /**
-             * Chrome: If we apply the insertOrderedList command on an empty block, the
-             * OL/UL will be nested inside the block.
-             * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
-             */
-
             var selection = new scribe.api.Selection();
 
             var listElement = selection.getContaining(function (node) {
               return node.nodeName === 'OL' || node.nodeName === 'UL';
             });
 
+
+            /**
+             * Firefox: If we apply the insertOrderedList or the insertUnorderedList
+             * command on an empty block, a P will be inserted after the OL/UL.
+             * As per: http://jsbin.com/cubacoli/3/edit?html,js,output
+             */
+
+            if (listElement.nextElementSibling &&
+                listElement.nextElementSibling.childNodes.length === 0) {
+              nodeHelpers.removeNode(listElement.nextElementSibling);
+            }
+
+            /**
+             * Chrome: If we apply the insertOrderedList or the insertUnorderedList
+             * command on an empty block, the OL/UL will be nested inside the block.
+             * As per: http://jsbin.com/eFiRedUc/1/edit?html,js,output
+             */
+
             if (listElement) {
               var listParentNode = listElement.parentNode;
-
               // If list is within a text block then split that block
               if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
                 selection.placeMarkers();
-                listParentNode.parentNode.insertBefore(listElement, listParentNode.nextElementSibling);
+                // Move listElement out of the block
+                nodeHelpers.insertAfter(listElement, listParentNode);
                 selection.selectMarkers();
-                listParentNode.parentNode.removeChild(listParentNode);
+
+                /**
+                 * Chrome 27-34: An empty text node is inserted.
+                 */
+                if (listParentNode.childNodes.length === 2 &&
+                    nodeHelpers.isEmptyTextNode(listParentNode.firstChild)) {
+                  nodeHelpers.removeNode(listParentNode);
+                }
+
+                // Remove the block if it's empty
+                if (listParentNode.childNodes.length === 0) {
+                  nodeHelpers.removeNode(listParentNode);
+                }
               }
             }
 
             /**
              * Chrome: If a parent node has a CSS `line-height` when we apply the
-             * insert(Un)OrderedList command, Chrome appends a SPAN to LIs with
-             * inline styling replicating that `line-height`.
+             * insertOrderedList or the insertUnorderedList command, Chrome appends
+             * a SPAN to LIs with inline styling replicating that `line-height`.
              * As per: http://jsbin.com/OtemujAY/7/edit?html,css,js,output
              *
              * FIXME: what if the user actually wants to use SPANs? This could
@@ -3822,7 +3886,7 @@ define('plugins/core/patches/commands/create-link',[],function () {
 
         /**
          * Firefox does not create a link when selection is collapsed
-         * so we create is manually. http://jsbin.com/tutufi/2/edit?js,output
+         * so we create it manually. http://jsbin.com/tutufi/2/edit?js,output
          */
         if (selection.selection.isCollapsed) {
           var aElement = document.createElement('a');
@@ -3847,7 +3911,7 @@ define('plugins/core/patches/commands/create-link',[],function () {
 
 });
 
-define('plugins/core/patches/events',['../../../api/element'], function (element) {
+define('plugins/core/patches/events',['scribe-common/src/element'], function (element) {
 
   
 
@@ -4132,7 +4196,8 @@ define('api/selection',[],function () {
     Selection.prototype.getContaining = function (nodeFilter) {
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
       var isTopContainerElement = node.node && node.node.attributes
-        && node.node.attributes.getNamedItem('contenteditable');
+         && node.node.attributes.getNamedItem('contenteditable');
+
       return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
     };
 
@@ -4148,14 +4213,74 @@ define('api/selection',[],function () {
       rangeEnd.insertNode(endMarker);
 
       /**
-       * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
-       * element. We just remove it.
-       * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
+       * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
+       * the inserted element. We just remove it. This in turn creates several
+       * bugs when perfoming commands on selections that contain an empty text
+       * node (`removeFormat`, `unlink`).
+       * As per: http://jsbin.com/hajim/5/edit?js,console,output
        */
       // TODO: abstract into polyfill for `Range.insertNode`
-      if (endMarker.nextSibling && endMarker.nextSibling.nodeType === 3 && endMarker.nextSibling.data === '') {
+      if (endMarker.nextSibling &&
+          endMarker.nextSibling.nodeType === Node.TEXT_NODE
+          && endMarker.nextSibling.data === '') {
         endMarker.parentNode.removeChild(endMarker.nextSibling);
       }
+
+
+
+      /**
+       * Chrome and Firefox: `Range.insertNode` inserts a bogus text node before
+       * the inserted element when the child element is at the start of a block
+       * element. We just remove it.
+       * FIXME: Document why we need to remove this
+       * As per: http://jsbin.com/sifez/1/edit?js,console,output
+       */
+      if (endMarker.previousSibling &&
+          endMarker.previousSibling.nodeType === Node.TEXT_NODE
+          && endMarker.previousSibling.data === '') {
+        endMarker.parentNode.removeChild(endMarker.previousSibling);
+      }
+
+
+      /**
+       * This is meant to test Chrome inserting erroneous text blocks into
+       * the scribe el when focus switches from a scribe.el to a button to
+       * the scribe.el. However, this is impossible to simlulate correctly
+       * in a test.
+       *
+       * This behaviour does not happen in Firefox.
+       *
+       * See http://jsbin.com/quhin/2/edit?js,output,console
+       *
+       * To reproduce the bug, follow the following steps:
+       *    1. Select text and create H2
+       *    2. Move cursor to front of text.
+       *    3. Remove the H2 by clicking the button
+       *    4. Observe that you are left with an empty H2
+       *        after the element.
+       *
+       * The problem is caused by the Range being different, depending on
+       * the position of the marker.
+       *
+       * Consider the following two scenarios.
+       *
+       * A)
+       *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
+       *   2. Click button and click the right of to scribe.el
+       *   3. scribe.el contains: ["1", <em>scribe-marker</em>. #text]
+       *
+       *   This is wrong but does not cause the problem.
+       *
+       * B)
+       *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
+       *   2. Click button and click to left of scribe.el
+       *   3. scribe.el contains: [#text, <em>scribe-marker</em>, "1"]
+       *
+       * The second example sets the range in the wrong place, meaning
+       * that in the second case the formatBlock is executed on the wrong
+       * element [the text node] leaving the empty H2 behind.
+       **/
+
 
       if (! this.selection.isCollapsed) {
         // Start marker
@@ -4164,15 +4289,33 @@ define('api/selection',[],function () {
         rangeStart.insertNode(startMarker);
 
         /**
-         * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
-         * element. We just remove it.
-         * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
+         * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
+         * the inserted element. We just remove it. This in turn creates several
+         * bugs when perfoming commands on selections that contain an empty text
+         * node (`removeFormat`, `unlink`).
+         * As per: http://jsbin.com/hajim/5/edit?js,console,output
          */
         // TODO: abstract into polyfill for `Range.insertNode`
-        if (startMarker.nextSibling && startMarker.nextSibling.nodeType === 3 && startMarker.nextSibling.data === '') {
+        if (startMarker.nextSibling &&
+            startMarker.nextSibling.nodeType === Node.TEXT_NODE
+            && startMarker.nextSibling.data === '') {
           startMarker.parentNode.removeChild(startMarker.nextSibling);
         }
+
+        /**
+         * Chrome and Firefox: `Range.insertNode` inserts a bogus text node
+         * before the inserted element when the child element is at the start of
+         * a block element. We just remove it.
+         * FIXME: Document why we need to remove this
+         * As per: http://jsbin.com/sifez/1/edit?js,console,output
+         */
+        if (startMarker.previousSibling &&
+            startMarker.previousSibling.nodeType === Node.TEXT_NODE
+            && startMarker.previousSibling.data === '') {
+          startMarker.parentNode.removeChild(startMarker.previousSibling);
+        }
       }
+
 
       this.selection.removeAllRanges();
       this.selection.addRange(this.range);
@@ -4558,7 +4701,7 @@ define('scribe',[
   './api',
   './transaction-manager',
   './undo-manager',
-  './event-emitter',
+  './event-emitter'
 ], function (
   defaults,
   flatten,
@@ -4634,6 +4777,7 @@ define('scribe',[
     this.use(escapeHtmlCharactersFormatter());
     this.use(replaceNbspCharsFormatter());
 
+
     // Patches
     this.use(patches.commands.bold());
     this.use(patches.commands.indent());
@@ -4676,7 +4820,7 @@ define('scribe',[
 
   Scribe.prototype.getContent = function () {
     // Remove bogus BR element for Firefox — see explanation in BR mode files.
-    return this.getHTML().replace(/<br>$/, '');
+    return this._htmlFormatterFactory.formatForExport(this.getHTML().replace(/<br>$/, ''));
   };
 
   Scribe.prototype.getTextContent = function () {
@@ -4747,9 +4891,23 @@ define('scribe',[
   };
 
   Scribe.prototype.insertHTML = function (html) {
+    /**
+     * When pasting text from Google Docs in both Chrome and Firefox,
+     * the resulting text will be wrapped in a B tag. So it would look
+     * something like <b><p>Text</p></b>, which is invalid HTML. The command
+     * insertHTML will then attempt to fix this content by moving the B tag
+     * inside the P. The result is: <p><b></b></p><p>Text</p>, which is valid
+     * but means an extra P is inserted into the text. To avoid this we run the
+     * formatters before the insertHTML command as the formatter will
+     * unwrap the P and delete the B tag. It is acceptable to remove invalid
+     * HTML as Scribe should only accept valid HTML.
+     *
+     * See http://jsbin.com/cayosada/3/edit for more
+     **/
+
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
-    this.getCommand('insertHTML').execute(html);
+    this.getCommand('insertHTML').execute(this._htmlFormatterFactory.format(html));
   };
 
   Scribe.prototype.isDebugModeEnabled = function () {
@@ -4787,7 +4945,8 @@ define('scribe',[
       // elements
       sanitize: [],
       // Normalize content to ensure it is ready for interaction
-      normalize: []
+      normalize: [],
+      export: []
     };
   }
 
@@ -4803,6 +4962,12 @@ define('scribe',[
     }, html);
 
     return formatted;
+  };
+
+  HTMLFormatterFactory.prototype.formatForExport = function (html) {
+    return this.formatters.export.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
   };
 
   return Scribe;
@@ -5026,21 +5191,25 @@ define('scribe-plugin-link-prompt-command',[],function () {
         if (link) {
           // Prepend href protocol if missing
           // For emails we just look for a `@` symbol as it is easier.
-          if (! /^mailto\:/.test(link) && /@/.test(link)) {
-            var shouldPrefixEmail = window.confirm(
-              'The URL you entered appears to be an email address. ' +
-              'Do you want to add the required “mailto:” prefix?'
-            );
-            if (shouldPrefixEmail) {
-              link = 'mailto:' + link;
-            }
-          } else if (! /^https?\:\/\//.test(link)) {
-            var shouldPrefixLink = window.confirm(
-              'The URL you entered appears to be a link. ' +
-              'Do you want to add the required “http://” prefix?'
-            );
-            if (shouldPrefixLink) {
-              link = 'http://' + link;
+          var urlProtocolRegExp = /^https?\:\/\//;
+          // We don't want to match URLs that sort of look like email addresses
+          if (! urlProtocolRegExp.test(link)) {
+            if (! /^mailto\:/.test(link) && /@/.test(link)) {
+              var shouldPrefixEmail = window.confirm(
+                'The URL you entered appears to be an email address. ' +
+                'Do you want to add the required “mailto:” prefix?'
+              );
+              if (shouldPrefixEmail) {
+                link = 'mailto:' + link;
+              }
+            } else {
+              var shouldPrefixLink = window.confirm(
+                'The URL you entered appears to be a link. ' +
+                'Do you want to add the required “http://” prefix?'
+              );
+              if (shouldPrefixLink) {
+                link = 'http://' + link;
+              }
             }
           }
 
@@ -6920,8 +7089,8 @@ define('tt_editor',[ 'scribe',
     scribe.use(scribePluginHeadingCommand(2));
     scribe.use(scribePluginHeadingCommand(1));
     scribe.use(scribePluginLinkPromptCommand());
-    scribe.use(scribePluginToolbar(toolbarElement));
     scribe.use(scribePluginTTInsertImageCommand());
+    scribe.use(scribePluginToolbar(toolbarElement));
 
     return {} // Public interface. OF NOTHINGNESS!!!!
   }

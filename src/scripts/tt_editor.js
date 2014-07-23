@@ -20,8 +20,8 @@ define([ 'scribe',
     scribe.use(scribePluginHeadingCommand(2));
     scribe.use(scribePluginHeadingCommand(1));
     scribe.use(scribePluginLinkPromptCommand());
-    scribe.use(scribePluginToolbar(toolbarElement));
     scribe.use(scribePluginTTInsertImageCommand());
+    scribe.use(scribePluginToolbar(toolbarElement));
 
     return {} // Public interface. OF NOTHINGNESS!!!!
   }
