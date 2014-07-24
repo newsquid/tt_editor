@@ -14,9 +14,14 @@ define('scribe-plugin-tt-insert-image', function(){
 
             console.log(loadImageUrl);
             
-            loadImageUrl(function(imageUrl) {
-                console.log(imageUrl);
-                scribe.api.SimpleCommand.prototype.execute.call(thisInsertImageCommand, "</p><img src='"+imageUrl+"'><p>");
+            loadImageUrl(function(imageUrl, callback) {
+                if(callback === undefined) callback = function(img) {};
+
+                scribe.api.SimpleCommand.prototype.execute.call(thisInsertImageCommand, "</p><img src='"+imageUrl+"' id='tt-insert-most-recent-image'><p>");
+                var img = document.getElementById("tt-insert-most-recent-image");
+                img.id = "";
+
+                callback(img);
             });
         };
 

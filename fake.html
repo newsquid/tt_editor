@@ -211,6 +211,10 @@ var scroll_amount = function() {
                     contentType: false,
                     success: function() {
                         $("#main_image").css("opacity", 1);
+                    },
+                    error: function() {
+                        $.d_modal("Failed to upload image");
+                        $(".main-image-container").addClass("empty");
                     }
                 });
             });
@@ -316,6 +320,33 @@ var scroll_amount = function() {
 
     </div>
     <script>
+      function uploadArticleImage(img_base64, callback) {
+          var $uploading_modal = $.d_modal("Uploading image...", { blocking: true });
+
+          var media_data = base64_to_blob(img_base64);
+
+          var $form = $(".in-text-image-form");
+          var formData = new FormData($form[0]);
+          formData.append("post[media]", media_data, "main-image");
+
+          $.ajax({
+              url: $form.attr("action"),
+              type: $form.attr("method"),
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function(data) {
+                  $uploading_modal.remove();
+
+                  callback(data.img_url);
+              },
+              error: function() {
+                  $uploading_modal.remove();
+                  $.d_modal("Failed to upload image :(");
+              }
+          });
+
+      }
 
       require(["tt_editor"],function(tt_editor){
 
@@ -323,7 +354,13 @@ var scroll_amount = function() {
           var toolbarElement = document.querySelector('.toolbar');
           var loadImageFunction = function(callback) {
               $("#post_media").unbind("change");
-              $("#post_media").trigger_cropping({}, callback);
+              $("#post_media").trigger_cropping({}, function(img_base64) {
+                  uploadArticleImage(img_base64, function(img_url) {
+                      callback(img_url, function(img_element) {
+                          img_element.contentEditable = false;
+                      });
+                  });
+              });
               $("#post_media").click();
           };
 
@@ -363,13 +400,11 @@ var scroll_amount = function() {
   </script>
 
 <!-- DEPRECATED IMAGE INSERTION -->
-<div class="add-content-box">
-    <form accept-charset="UTF-8" action="/post/attach" class="media_form" enctype="multipart/form-data" id="imgform" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" />    <input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
-      <input id="post_media" name="post[media]" type="file" />
-      <input id="post_type" name="post[type]" type="hidden" value="image" />
-      <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
-    </form>
-</div>
+<form accept-charset="UTF-8" action="/post/attach" class="media_form in-text-image-form" enctype="multipart/form-data" id="imgform" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" />    <input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
+  <input id="post_media" name="post[media]" type="file" />
+  <input id="post_type" name="post[type]" type="hidden" value="image" />
+  <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
+</form>
 
 <!--
     SETTINGS MODAL
