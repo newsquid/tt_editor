@@ -23,6 +23,6 @@ define([ 'scribe',
     scribe.use(scribePluginTTInsertImageCommand(loadImageFunction));
     scribe.use(scribePluginToolbar(toolbarElement));
 
-    return {} // Public interface. OF NOTHINGNESS!!!!
+    return {}
   }
 });

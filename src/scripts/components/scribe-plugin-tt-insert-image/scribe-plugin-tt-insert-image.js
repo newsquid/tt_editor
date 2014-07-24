@@ -12,8 +12,15 @@ define('scribe-plugin-tt-insert-image', function(){
         TTInsertImageCommand.execute = function() {
             var thisInsertImageCommand = this;
 
-            console.log(loadImageUrl);
-            
+            // loadImageUrl is fed to scribe, and is a function which loads
+            // the image that should be added (by prompting the user, or
+            // something like that). The function should take a callback,
+            // which is this plugin's way of actually inserting the image
+            // into the text area.
+            //   The plugin inserts the image (with the src provided) and
+            // then feeds the resulting image DOM element to its own
+            // callback, allowing the user of the plugin to do some post-
+            // processing of it.
             loadImageUrl(function(imageUrl, callback) {
                 if(callback === undefined) callback = function(img) {};
 

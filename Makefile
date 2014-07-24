@@ -1,5 +1,6 @@
 TARGET=tt_editor.js
 RJS=./node_modules/.bin/r.js -o
+BOWER=./node_modules/.bin/bower
 BUILD_CONFIG=build.js
 
 CSSS=$(wildcard src/css/*)
@@ -11,7 +12,7 @@ all: surf
 build: $(TARGET) style.css
 
 $(TARGET): dependencies
-	$(RJS) $(BUILD_CONFIG) optimize=none out=$(TARGET)
+	$(RJS) $(BUILD_CONFIG) out=$(TARGET)
 
 style.css: $(CSSS)
 	cat src/css/* > style.css
@@ -26,5 +27,5 @@ serve:
 
 dependencies:
 	npm install
-	node_modules/.bin/bower install --allow-root
-	node_modules/.bin/bower update --allow-root
+	$(BOWER) install --allow-root
+	$(BOWER) update --allow-root
