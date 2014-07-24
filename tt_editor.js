@@ -7068,9 +7068,12 @@ define('scribe-plugin-tt-insert-image', [],function(){
 
         TTInsertImageCommand.execute = function() {
             var thisInsertImageCommand = this;
+
+            console.log(loadImageUrl);
             
             loadImageUrl(function(imageUrl) {
-                scribe.api.SimpleCommand.prototype.execute.call(this, "</p><img src='"+imgLink+"'><p>");
+                console.log(imageUrl);
+                scribe.api.SimpleCommand.prototype.execute.call(thisInsertImageCommand, "</p><img src='"+imageUrl+"'><p>");
             });
         };
 
