@@ -388,7 +388,7 @@ var article = (function($) {
 
     var confirmOnPageExit = function(e) {
         e = e || window.event;
-        var message = "You have unsaved changes in your document. Are you sure you want to leave the page?";
+        var message = "You have unsaved changes in your document.";
 
         //Support old browsers
         if(e) {
