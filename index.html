@@ -1,51 +1,543 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrunkTrunk | Writer meet Reader - Reader meet Writer</title>
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,900,700,700italic,400italic' rel='stylesheet' type='text/css'>
+    <link data--track="true" href="assets/application.css" media="all" rel="stylesheet" />
+    <script data-turbolinks-track="true" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script data-turbolinks-track="true" src="assets/jquery_ujs.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/TrunkForms/Form.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/TrunkForms/InviteForm.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/TrunkForms/ReportForm.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/transition.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/alert.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/button.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/carousel.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/collapse.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/dropdown.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/modal.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/tooltip.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/popover.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/scrollspy.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/tab.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap/affix.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/twitter/bootstrap.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/jquery.ui.core.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/jquery.ui.widget.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/jquery.ui.position.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/jquery.ui.menu.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/jquery.ui.autocomplete.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/lib.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/header.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/jquery.showandtell.1.1.1.min.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/jquery.d_modal.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/report.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/jquery.Jcrop.min.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/jquery.cropper.js?body=1"></script>
+    <script data-turbolinks-track="true" src="assets/application.js?body=1"></script>
+    
+    <script src="assets/posts.js?body=1"></script>
 
-      <!--link rel="stylesheet" type="text/css" href="styles/main.css"-->
-      <script src="tt_editor.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="tt_editor.js"></script>
 
   </head>
   <body>
+    <div id="top"></div>
+    <header class="site-header">
+ <nav>
+     <a href="http://demo.trunktrunk.org/" id="nav_home" class="pull-left">
+         <img src="http://demo.trunktrunk.org/assets/tt_logo_header.png"
+              alt="Home"
+              class="nav-img"
+              title="Home">
+     </a>
+
+     <div class="pull-right nav-items">
+           <a href="http://demo.trunktrunk.org/posts/new"><span class='nav-label'>create</span> <span class='glyphicon glyphicon-pencil nav-icon'></span></a>
+           <a href="http://demo.trunktrunk.org/dashboard"><span class='glyphicon glyphicon-home nav-icon'></span></a>
+
+           <input type="text" placeholder="Search..."
+               class="searchbar" id="searchbar">
+           <a href="#search" id="nav-search"><span class="glyphicon glyphicon-search nav-icon"></span></a>
+       </div>
+
+    </nav>
+ </header>
+ <article class="edit-article article-view">
+
+
+<!---- BEGIN EDITOR ---->
+
+<!-- 
+    SAVING STATUS
+    States: -, modified, saving, saved, publishing, published, not-saved, not-published.
+-->
+<div class="saving-status"></div>
+<script>
+    $(document).ready(function() {
+        $("body").bind("scroll resize", function() {
+
+            /**
+             * Check which ones work on which computarz
+             */
+            console.log("article scrolly");
+
+            $(".saving-status").css("top", Math.max(41 - scroll_amount(),0) + "px");
+        });
+    });
+</script>
+
+<!--
+    PUBLISH BUTTON
+    Clicking this leads to a modal prompting for a potential price, if the
+       article has not been published before.
+    Here you conforim publishing.
+    Upon publishing you are told that you can change the price in the
+      settings.
+    You are also given a "View published article" link to view the
+      published article.
+    If the article has already been published, publishing changes happens
+      immediately on click.
+-->
+<div class="publish-button"><span class="glyphicon glyphicon-send"></span></div>
+<script>
+    var article_price = 0; //should be set from ruby
+
+    $(".publish-button").click(function() {
+        $(".publish-price-picker").val(article_price);
+
+        if(article.isValid()) {
+            article.save();
+            $("#publish-modal").modal("show");
+        }
+    });
+</script>
+
+<!--
+    SETTINGS BUTTON
+    Clicking this leads to a settings modal. Settings are:
+    - Price
+    - Delete
+    - Unpublish (if published)
+-->
+<div class="settings-button"><span class="glyphicon glyphicon-cog"></span></div>
+<script>
+    $(".settings-button").click(function() {
+        $(".settings-price-picker").val(article_price);
+        $("#settings-modal").modal("show");
+    });
+</script>
+
+<!-- HEADER -->
+<header id="header" class="article-header article-category">
+    <hgroup class="title">
+    <h5>
+        <a href='/readers/5'>
+          By nt /
+          Jun 19, 2014
+        </a>
+    </h5>
+    <h1></h1>
+</hgroup>
+
+<!-- MAIN IMAGE UPLOAD -->
+<form accept-charset="UTF-8" action="/post/attach" class="media_form crop_form" enctype="multipart/form-data" id="main_image_form" method="post" style=""><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
+        <input id="main_image_form_file" name="post[media]" type="file" />
+        <input id="post_type" name="post[type]" type="hidden" value="main_image" />
+        <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
+</form>
+
+<div class="main-image-container empty">
+    <div>
+        <img src="" class="main-img" id="main_image">
+    <script>
+        $(document).ready(function() {
+            $(".main-image-container > div").click(function() {
+                $("#main_image_form_file").click();
+            });
+            $("#main_image_form_file").trigger_cropping({
+                scaleWidth: 960,
+                aspectRatio: 16/9
+            }, function(img_src) {
+                $("#main_image")
+                    .attr("src", img_src)
+                    .css("opacity", 0.5);
+
+                $(".main-image-container").removeClass("empty");
+
+                var media_data = base64_to_blob(img_src);
+
+                var $form = $("#main_image_form");
+                var formData = new FormData($form[0]);
+                formData.append("post[media]", media_data, "article-main-image");
+
+                $.ajax({
+                    url: $form.attr("action"),
+                    type: $form.attr("method"),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function() {
+                        $("#main_image").css("opacity", 1);
+                    },
+                    error: function() {
+                        $.d_modal("Failed to upload image");
+                        $(".main-image-container").addClass("empty");
+                    }
+                });
+            });
+        });
+    </script>
+    </div>
+</div>
+
+    <figure>
+      <figcaption contenteditable="true" id="main_img_caption" class="form-element edit-field">
+
+      </figcaption>
+    </figure>
+<!-- END MAIN IMAGE UPLOAD -->
+    
+<!-- TITLE -->
+<textarea type="text" name="title" id="title" class="form-element edit-field" placeholder="Title" value=""></textarea>
+<script>
+        var $title = $("textarea#title");
+
+        $title.keypress(function(e) {
+            if(e.which == 13) {
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            }
+            $title.removeClass("invalid").tooltip("hide");
+        }).keyup(function(e) {
+            $title[0].style.height = '24px';
+            $title[0].style.height = $title[0].scrollHeight + 'px';
+        });
+
+        $(document).ready(function() {
+            $title[0].style.height = '24px';
+            $title[0].style.height = $title[0].scrollHeight + 'px';
+        }); 
+</script>
+
+  </header>
+
+<!--
+    TAGS
+    On error, the error should be explained with a message in a tooltip.
+    TODO: When adding many long tags, the design breaks.
+-->
+<div class="article-info">
+    <div class="tags" id="tags"></div>
+</div>
+<div class="modal fade group-selector-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Select a group</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN TEXT -->
+  <section class="g-body content-container">
     <div id="main" style="position:relative">
+
       <div class="toolbar" style="display:block" style="z-index:3000">
-        <button data-command-name="bold">B</button>
-        <button data-command-name="italic">i</button>
-        <button data-command-name="h1">H1</button>
-        <button data-command-name="h2">H2</button>
-        <button data-command-name="blockquote">"</button>
-        <button data-command-name="linkPrompt">Link</button>
-        <button data-command-name="insertUnorderedList">UL</button>
+        <button data-command-name="bold" data-toggle="tooltip" data-placement="top" title="Bold"><span class="glyphicon glyphicon-bold"></span></button>
+        <button data-command-name="italic" data-toggle="tooltip" data-placement="top" title="Italic"><span class="glyphicon glyphicon-italic"></span></button>
+        <button data-command-name="h1" data-toggle="tooltip" data-placement="top" title="Big heading"><span class="glyphicon glyphicon-header"></span></button>
+        <button data-command-name="h2" data-toggle="tooltip" data-placement="top" title="Small heading"><span class="glyphicon glyphicon-header" style="font-size: 0.8em"></span></button>
+        <button data-command-name="blockquote" data-toggle="tooltip" data-placement="top" title="Quotation" style="font-size: 1.3em;">&ldquo;</button>
+        <button data-command-name="linkPrompt" data-toggle="tooltip" data-placement="top" title="Link"><span class="glyphicon glyphicon-link"></span></button>
+        <button data-command-name="insertUnorderedList" data-toggle="tooltip" data-placement="top" title="Insert unordered list"><span class="glyphicon glyphicon-list"></span></button>
+        <button data-command-name="tt_insertImage" data-toggle="tooltip" data-placement="top" title="Insert image"><span class="glyphicon glyphicon-picture"></span></button>
       </div>
+      <script>
+        $(".toolbar button").tooltip("hide");
+        $(document).ready(function() {
+            $(".toolbar").css("position", "relative")
+                         .css("top", 0)
+                         .css("left", 0);
 
-      <div id="media-bar" style="display:none;">
-        <a href="#">Add image</a>
-      </div>
 
-      <img id="an-image" src="/home/csp/screenshots/1.png" height="50px"></img>
+            $("body").bind("scroll resize", function() {
+                var scrl = scroll_amount();
 
-      <article id="content" class="content">
+                var main_top_pos = $("#content").offset().top - $(".site-header").offset().top;
+
+                if(scrl > main_top_pos) {
+                   $(".toolbar").css("top", Math.max(scrl - main_top_pos,0) + "px");
+                }
+            });
+        });
+      </script>
+
+      <article id="content" class="content edit-field empty">
       </article>
+      <script>
+        $("#content").keydown(function() {
+            $("#content").removeClass("invalid").tooltip("hide");
+        });
+      </script>
 
     </div>
     <script>
+      function uploadArticleImage(img_base64, callback) {
+          var $uploading_modal = $.d_modal("Uploading image...", { blocking: true });
+
+          var media_data = base64_to_blob(img_base64);
+
+          var $form = $(".in-text-image-form");
+          var formData = new FormData($form[0]);
+          formData.append("post[media]", media_data, "main-image");
+
+          $.ajax({
+              url: $form.attr("action"),
+              type: $form.attr("method"),
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function(data) {
+                  $uploading_modal.remove();
+
+                  callback(data.img_url);
+              },
+              error: function() {
+                  $uploading_modal.remove();
+                  $.d_modal("Failed to upload image :(");
+              }
+          });
+
+      }
 
       require(["tt_editor"],function(tt_editor){
 
           var scribeElement = document.querySelector('.content');
           var toolbarElement = document.querySelector('.toolbar');
-          var mediabarElement = document.getElementById('media-bar');
+          var loadImageFunction = function(callback) {
+              $("#post_media").unbind("change");
+              $("#post_media").trigger_cropping({}, function(img_base64) {
+                  uploadArticleImage(img_base64, function(img_url) {
+                      callback(img_url, function(img_element) {
+                          img_element.contentEditable = false;
+                      });
+                  });
+              });
+              $("#post_media").click();
+          };
 
-          function addImage(event,element){
-            var image = document.getElementById("an-image");
-            element.parentNode.insertBefore(image,element);
-          }
-
-          var tte = new tt_editor(scribeElement,toolbarElement,mediabarElement,addImage);
+          var tte = new tt_editor(scribeElement,toolbarElement,loadImageFunction);
           console.log(tte);
 
       });
     </script>
+</section>
+<!-- END MAIN TEXT -->
 
-  </body>
+<!-- PAGE-SPECIFIC JS INCLUDES -->
+<!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-field.js?body=1"></script>
+<!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-tags.js?body=1"></script>
+<!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-save-publish.js?body=1"></script>
+<!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-price.js?body=1"></script>
+<!--ADDED--><script src="scrolly.js"></script>
+
+
+<!-- TOS PROMPTER -->
+  <script data-turbolinks-track="true" src="assets/tos.js?body=1"></script>
+  <script>
+      var vars = {
+          post: "14",
+          viewer: "5"
+      };
+
+      (function($) {
+          $(document).ready(function() {
+              var post = vars.post,
+                  reader = vars.viewer;
+
+              // Present writer with a "redirect-to-TOS" modal if we're not
+              // currently editing the TOS and he has yet to accept the tos
+              loadRedirectIf(post,reader,function(){ loadRedirect(post,reader);});
+          });
+      })(jQuery);
+  </script>
+
+<!-- DEPRECATED IMAGE INSERTION -->
+<form accept-charset="UTF-8" action="/post/attach" class="media_form in-text-image-form" enctype="multipart/form-data" id="imgform" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" />    <input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
+  <input id="post_media" name="post[media]" type="file" />
+  <input id="post_type" name="post[type]" type="hidden" value="image" />
+  <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
+</form>
+
+<!--
+    SETTINGS MODAL
+    TODO: Errthang
+-->
+<div class="modal fade settings-modal" id="settings-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Settings</h4>
+            </div>
+            <div class="modal-body">
+                <div class="price-picker-box">
+                  <div class="price-label">
+                    Price (USD):
+                  </div>
+                  <div class="price-picker-container">
+                    <input type="number" class="price-picker settings-price-picker" style="width: 90px;" step="0.01" min=0 value="0.0">
+                  </div>
+                  <button class="btn btn-default settings-price-picker-confirm">Update price</button>
+                </div>
+                <p>
+                    Go back to last published revision?
+                    <button class="btn btn-primary" id="discard-changes-button">Discard changes</button>
+                </p>
+                <p>
+                    Hide article from the public?
+                    <button class="btn btn-primary" id="unpublish-button">Unpublish</button>
+                </p>
+                <p>
+                    Completely remove article?
+                    <button class="btn btn-danger" id="delete-button">Delete</button>
+                    <form id="delete-form" action="http://demo.trunktrunk.org/posts/14" class="button_to" method="post"><input name="_method" type="hidden" value="delete" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></form>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".settings-price-picker-confirm").click(function() {
+        if(priceValid()) {
+            article.save();
+        }
+    });
+</script>
+     
+<!--
+    PUBLISH MODAL
+    TODO: Should indicate that price is in USD
+    TODO: Make submission work
+-->
+<div class="modal fade publish-modal" id="publish-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Publish article</h4>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to charge money for your article?</p>
+                <div class="price-picker-box">
+                    <div class="price-label">
+                        Price (USD):
+                    </div>
+                    <div class="price-picker-container">
+                        <input type="number" class="price-picker publish-price-picker" style="width: 100px;" step="0.01" min=0 value="0.0">
+                    </div>
+                </div>
+                <p>You can change the price later, via the article's Settings menu.</p>
+                <button class="btn btn-block btn-lg btn-success" id="confirm-publish">Publish</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function priceValid() {
+        if($(".settings-price-picker").val() >= 0) {
+            return true;
+        }
+        else {
+            $(".price-picker")
+                .addClass("invalid")
+                .tooltip({
+                    placement: "right",
+                    trigger: "manual",
+                    title: "Price cannot be negative!"
+                })
+                .tooltip("show");
+
+            return false;
+        }
+    }
+
+    $(document).ready(function() {
+        $("#confirm-publish").click(function() {
+            if(priceValid()) {
+                article.publish(function() {
+                    $("#publish-modal").modal("hide");
+                    article_price = $(".publish-price-picker").val();
+                    $("#post-publish-modal").modal("show");
+                });
+            }
+        });
+
+        /**
+         * Changing price in publish price picker, changes it in settings
+         * one, and vice versa
+         */
+        $(".publish-price-picker, .settings-price-picker").change(function() {
+            $(".price-picker").tooltip("destroy").removeClass("invalid");
+            $(".publish-price-picker, .settings-price-picker").val($(this).val());
+        });
+    });
+</script>
+     
+<!--
+    POST-PUBLISH MODAL
+    TODO: Errthang
+-->
+<div class="modal fade post-publish-modal" id="post-publish-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Your article has been published!</h4>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-block btn-lg btn-primary">View published article</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SET UP SAVE AND PUBLISH -->
+<form accept-charset="UTF-8" action="http://demo.trunktrunk.org/posts/14" data-remote="true" id="post-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="_method" type="hidden" value="patch" /></div>
+</form>
+<script>
+    (function($) {
+        $(document).ready(function() {
+            setUpSaveAndPublish({
+                discard_link: "http://demo.trunktrunk.org/posts/14/unpublished_revisions",
+                is_published: false
+            });
+        });
+    })(jQuery);
+</script>
+
+<!---- END EDITOR ---->
+
+
+</article>
+
+      <footer class="site-footer"><div class="wrap">
+    <span class="copyright">All rights reserved &copy; TrunkTrunk.com</span>
+    <span class="to-top"><a href="#top" class="to-top-link">Back to top</a></span>
+    <span><a href="http://demo.trunktrunk.org/tos">Terms of Service</a></span>
+    <!--span><a href="#NoPrivacyAllowed">Privacy Policy</a></span-->
+    <span><a target="_blank" href="mailto:support@trunktrunk.org">Contact</a></span>
+    <!--span><a href="#AboutWhat?">About</a></span-->
+</div></footer>
+
+    </body>
 </html>
