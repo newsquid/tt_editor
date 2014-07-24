@@ -1,0 +1,23 @@
+{
+  "name": "scribe-plugin-tt-insert-image",
+  "main": "scribe-plugin-tt-insert-image.js",
+  "ignore": [
+    ".editorconfig",
+    ".git",
+    "Makefile",
+    "build",
+    "node_modules",
+    "package.json",
+    "src"
+  ],
+  "homepage": "https://github.com/newsquid/scribe-plugin-tt-insert-image",
+  "_release": "c48e2774d0",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "c48e2774d0ab7216ad1f6e12d6c93de90c35c31d"
+  },
+  "_source": "git://github.com/newsquid/scribe-plugin-tt-insert-image.git",
+  "_target": "*",
+  "_originalSource": "git://github.com/newsquid/scribe-plugin-tt-insert-image/"
+}

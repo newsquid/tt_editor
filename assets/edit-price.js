@@ -1,7 +1,7 @@
 var change_i = 0;
 
 // The price box is not input, apparently
-$("#price").keyup(function() {
+$(".price-picker").keyup(function() {
     var $this = $(this);
     var this_i = ++change_i;
 

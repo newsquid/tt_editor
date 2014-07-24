@@ -1,7 +1,7 @@
 {
-  "name": "scribe-plugin-image-paragraphs",
-  "main": "scribe-plugin-image-paragraphs.js",
-  "version": "0.1.0",
+  "name": "scribe-plugin-tt-insert-image",
+  "main": "scribe-plugin-tt-insert-image.js",
+  "version": "0.1.2",
   "ignore": [
     ".editorconfig",
     ".git",

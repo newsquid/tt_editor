@@ -297,7 +297,7 @@ var article = (function($) {
         }, function (d, textStatus, jqXHR) {
             if (this_save_i == save_i) {
                 saving_status.saved();
-
+                removeConfirmOnPageExit();
                 success_callback();
             }
         }, function (jqXHR, textStatus, errorThrown) {
@@ -365,6 +365,7 @@ var article = (function($) {
 
     function noteArticleChanged() {
         article_updated = true;
+        registerConfirmOnPageExit();
         saving_status.modified();
     }
 
@@ -383,6 +384,26 @@ var article = (function($) {
 
         event.preventDefault();
         return false;
+    }
+
+    var confirmOnPageExit = function(e) {
+        e = e || window.event;
+        var message = "You have unsaved changes in your document.";
+
+        //Support old browsers
+        if(e) {
+            e.returnValue = message;
+        }
+
+        return message;
+    }
+
+    function registerConfirmOnPageExit() {
+        window.onbeforeunload = confirmOnPageExit;
+    }
+
+    function removeConfirmOnPageExit() {
+        window.onbeforeunload = null;
     }
 
     function showDiscardConfirmation(){

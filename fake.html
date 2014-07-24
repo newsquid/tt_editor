@@ -137,6 +137,7 @@ var scroll_amount = function() {
 
     $(".publish-button").click(function() {
         $(".publish-price-picker").val(article_price);
+
         if(article.isValid()) {
             article.save();
             $("#publish-modal").modal("show");
@@ -176,16 +177,16 @@ var scroll_amount = function() {
         <input id="main_image_form_file" name="post[media]" type="file" />
         <input id="post_type" name="post[type]" type="hidden" value="main_image" />
         <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
+</form>
 
-        <img src="http://demo.trunktrunk.org/assets/image_button_article_2x.png" class="main-img trigger" id="main_image">
-        <input name="commit" type="submit" value="Update Post" />
-</form>    <script>
+<div class="main-image-container empty">
+    <div>
+        <img src="" class="main-img" id="main_image">
+    <script>
         $(document).ready(function() {
-            $("#main_image_form").submit(function(e) {
-                e.preventDefault();
-                return false;
+            $(".main-image-container > div").click(function() {
+                $("#main_image_form_file").click();
             });
-
             $("#main_image_form_file").trigger_cropping({
                 scaleWidth: 960,
                 aspectRatio: 16/9
@@ -193,6 +194,8 @@ var scroll_amount = function() {
                 $("#main_image")
                     .attr("src", img_src)
                     .css("opacity", 0.5);
+
+                $(".main-image-container").removeClass("empty");
 
                 var media_data = base64_to_blob(img_src);
 
@@ -208,11 +211,17 @@ var scroll_amount = function() {
                     contentType: false,
                     success: function() {
                         $("#main_image").css("opacity", 1);
+                    },
+                    error: function() {
+                        $.d_modal("Failed to upload image");
+                        $(".main-image-container").addClass("empty");
                     }
                 });
             });
         });
     </script>
+    </div>
+</div>
 
     <figure>
       <figcaption contenteditable="true" id="main_img_caption" class="form-element edit-field">
@@ -279,7 +288,7 @@ var scroll_amount = function() {
         <button data-command-name="blockquote" data-toggle="tooltip" data-placement="top" title="Quotation" style="font-size: 1.3em;">&ldquo;</button>
         <button data-command-name="linkPrompt" data-toggle="tooltip" data-placement="top" title="Link"><span class="glyphicon glyphicon-link"></span></button>
         <button data-command-name="insertUnorderedList" data-toggle="tooltip" data-placement="top" title="Insert unordered list"><span class="glyphicon glyphicon-list"></span></button>
-        <button data-command-name="insertImage" data-toggle="tooltip" data-placement="top" title="Insert image"><span class="glyphicon glyphicon-picture"></span></button>
+        <button data-command-name="tt_insertImage" data-toggle="tooltip" data-placement="top" title="Insert image"><span class="glyphicon glyphicon-picture"></span></button>
       </div>
       <script>
         $(".toolbar button").tooltip("hide");
@@ -288,11 +297,11 @@ var scroll_amount = function() {
                          .css("top", 0)
                          .css("left", 0);
 
-            var main_top_pos = $("#content").offset().top - $(".site-header").offset().top;
-            console.log("main_top_pos: "+main_top_pos);
 
             $("body").bind("scroll resize", function() {
                 var scrl = scroll_amount();
+
+                var main_top_pos = $("#content").offset().top - $(".site-header").offset().top;
 
                 if(scrl > main_top_pos) {
                    $(".toolbar").css("top", Math.max(scrl - main_top_pos,0) + "px");
@@ -311,13 +320,51 @@ var scroll_amount = function() {
 
     </div>
     <script>
+      function uploadArticleImage(img_base64, callback) {
+          var $uploading_modal = $.d_modal("Uploading image...", { blocking: true });
+
+          var media_data = base64_to_blob(img_base64);
+
+          var $form = $(".in-text-image-form");
+          var formData = new FormData($form[0]);
+          formData.append("post[media]", media_data, "main-image");
+
+          $.ajax({
+              url: $form.attr("action"),
+              type: $form.attr("method"),
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function(data) {
+                  $uploading_modal.remove();
+
+                  callback(data.img_url);
+              },
+              error: function() {
+                  $uploading_modal.remove();
+                  $.d_modal("Failed to upload image :(");
+              }
+          });
+
+      }
 
       require(["tt_editor"],function(tt_editor){
 
           var scribeElement = document.querySelector('.content');
           var toolbarElement = document.querySelector('.toolbar');
+          var loadImageFunction = function(callback) {
+              $("#post_media").unbind("change");
+              $("#post_media").trigger_cropping({}, function(img_base64) {
+                  uploadArticleImage(img_base64, function(img_url) {
+                      callback(img_url, function(img_element) {
+                          img_element.contentEditable = false;
+                      });
+                  });
+              });
+              $("#post_media").click();
+          };
 
-          var tte = new tt_editor(scribeElement,toolbarElement);
+          var tte = new tt_editor(scribeElement,toolbarElement,loadImageFunction);
           console.log(tte);
 
       });
@@ -326,14 +373,10 @@ var scroll_amount = function() {
 <!-- END MAIN TEXT -->
 
 <!-- PAGE-SPECIFIC JS INCLUDES -->
-<script data-turbolinks-track="true" src="assets/hiddenform.edit.js?body=1"></script>
 <!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-field.js?body=1"></script>
 <!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-tags.js?body=1"></script>
 <!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-save-publish.js?body=1"></script>
-<script data-turbolinks-track="true" src="assets/edit-article.js?body=1"></script>
 <script data-turbolinks-track="true" src="assets/edit-price.js?body=1"></script>
-<!-- TODO: Why is groups used here!? -->
-<script data-turbolinks-track="true" src="assets/groups.js?body=1"></script>
 
 
 <!-- TOS PROMPTER -->
@@ -357,15 +400,11 @@ var scroll_amount = function() {
   </script>
 
 <!-- DEPRECATED IMAGE INSERTION -->
-<div class="add-content-box">
-    <form accept-charset="UTF-8" action="/post/attach" class="media_form" enctype="multipart/form-data" id="imgform" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" />    <input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
-      <input id="post_media" name="post[media]" type="file" />
-      <input id="post_type" name="post[type]" type="hidden" value="image" />
-      <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
-      <button class="trigger" id="imgbutton" name="button" type="submit">insert Image</button>
-      <input name="commit" type="submit" value="Update Post" />
-    </form>
-</div>
+<form accept-charset="UTF-8" action="/post/attach" class="media_form in-text-image-form" enctype="multipart/form-data" id="imgform" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" />    <input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
+  <input id="post_media" name="post[media]" type="file" />
+  <input id="post_type" name="post[type]" type="hidden" value="image" />
+  <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
+</form>
 
 <!--
     SETTINGS MODAL
@@ -407,7 +446,9 @@ var scroll_amount = function() {
 </div>
 <script>
     $(".settings-price-picker-confirm").click(function() {
-        article.save();
+        if(priceValid()) {
+            article.save();
+        }
     });
 </script>
      
@@ -440,13 +481,33 @@ var scroll_amount = function() {
     </div>
 </div>
 <script>
+    function priceValid() {
+        if($(".settings-price-picker").val() >= 0) {
+            return true;
+        }
+        else {
+            $(".price-picker")
+                .addClass("invalid")
+                .tooltip({
+                    placement: "right",
+                    trigger: "manual",
+                    title: "Price cannot be negative!"
+                })
+                .tooltip("show");
+
+            return false;
+        }
+    }
+
     $(document).ready(function() {
         $("#confirm-publish").click(function() {
-            article.publish(function() {
-                $("#publish-modal").modal("hide");
-                article_price = $(".publish-price-picker").val();
-                $("#post-publish-modal").modal("show");
-            });
+            if(priceValid()) {
+                article.publish(function() {
+                    $("#publish-modal").modal("hide");
+                    article_price = $(".publish-price-picker").val();
+                    $("#post-publish-modal").modal("show");
+                });
+            }
         });
 
         /**
@@ -454,6 +515,7 @@ var scroll_amount = function() {
          * one, and vice versa
          */
         $(".publish-price-picker, .settings-price-picker").change(function() {
+            $(".price-picker").tooltip("destroy").removeClass("invalid");
             $(".publish-price-picker, .settings-price-picker").val($(this).val());
         });
     });

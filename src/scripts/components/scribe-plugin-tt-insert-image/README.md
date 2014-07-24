@@ -1,4 +1,4 @@
-# scribe-plugin-image-paragraphs
+# scribe-plugin-tt-insert-image
 
 Adds functionality to add images to paragraphs for the 
 [scribe editor](https://github.com/guardian/scribe)

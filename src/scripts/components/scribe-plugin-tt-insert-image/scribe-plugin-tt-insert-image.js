@@ -1,0 +1,39 @@
+define('scribe-plugin-tt-insert-image', function(){
+
+  'use strict';
+
+  return function(loadImageUrl){
+    return function(scribe){
+
+        var TTInsertImageCommand = new scribe.api.Command("insertHTML");
+
+        TTInsertImageCommand.nodeName = 'IMG';
+
+        TTInsertImageCommand.execute = function() {
+            var thisInsertImageCommand = this;
+
+            console.log(loadImageUrl);
+            
+            loadImageUrl(function(imageUrl, callback) {
+                if(callback === undefined) callback = function(img) {};
+
+                scribe.api.SimpleCommand.prototype.execute.call(thisInsertImageCommand, "</p><img src='"+imageUrl+"' id='tt-insert-most-recent-image'><p>");
+                var img = document.getElementById("tt-insert-most-recent-image");
+                img.id = "";
+
+                callback(img);
+            });
+        };
+
+        TTInsertImageCommand.queryState = function() {
+           var selection = new scribe.api.Selection();
+           return !! selection.getContaining(function(node) {
+               return node.nodeName == this.nodeName;
+           }.bind(this));
+        };
+
+        scribe.commands.tt_insertImage = TTInsertImageCommand;
+
+    };
+  };
+});

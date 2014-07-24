@@ -4,26 +4,13 @@ define([ 'scribe',
           'scribe-plugin-heading-command',
           'scribe-plugin-link-prompt-command',
           'scribe-plugin-sanitizer',
-          'scribe-plugin-image-paragraphs',
-          'scribe-plugin-hover-toolbar'],
+          'scribe-plugin-tt-insert-image'],
 
   function (Scribe, scribePluginBlockquoteCommand, scribePluginToolbar,
             scribePluginHeadingCommand, scribePluginLinkPromptCommand,
-            scribePluginSanitizer, scribePluginImageParagraphs,
-            scribePluginHoverToolbar) {
+            scribePluginSanitizer, scribePluginTTInsertImageCommand) {
 
-  //scribe.use(scribePluginSanitizer({ tags: {
-  //  p: {},
-  //  b: {},
-  //  i: {},
-  //  br: {},
-  //  li: {},
-  //  h1: {},
-  //  h2: {},
-  //  a: {}
-  //}}));
-
-  return function(scribeElement,toolbarElement,mediabarElement,addImageFunction){
+  return function(scribeElement,toolbarElement,loadImageFunction){
 
     // Create an instance of Scribe
     var scribe = new Scribe(scribeElement);
@@ -33,9 +20,8 @@ define([ 'scribe',
     scribe.use(scribePluginHeadingCommand(2));
     scribe.use(scribePluginHeadingCommand(1));
     scribe.use(scribePluginLinkPromptCommand());
+    scribe.use(scribePluginTTInsertImageCommand(loadImageFunction));
     scribe.use(scribePluginToolbar(toolbarElement));
-    scribe.use(scribePluginHoverToolbar(toolbarElement));
-    scribe.use(scribePluginImageParagraphs(mediabarElement,addImageFunction));
 
     return {} // Public interface. OF NOTHINGNESS!!!!
   }

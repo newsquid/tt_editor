@@ -3,7 +3,8 @@ var setUpEditField = (function($) {
     function setUpEditField($editField) {
         $editField
             .keyup(editFieldKeyup)
-            .keydown(editFieldKeydown);
+            .keydown(editFieldKeydown)
+            .trigger("keyup");
     }
 
     function editFieldKeyup() {
