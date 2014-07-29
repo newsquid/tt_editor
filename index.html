@@ -79,12 +79,6 @@
 <script>
     $(document).ready(function() {
         $("body").bind("scroll resize", function() {
-
-            /**
-             * Check which ones work on which computarz
-             */
-            console.log("article scrolly");
-
             $(".saving-status").css("top", Math.max(41 - scroll_amount(),0) + "px");
         });
     });
@@ -147,9 +141,9 @@
 <form accept-charset="UTF-8" action="/post/attach" class="media_form crop_form" enctype="multipart/form-data" id="main_image_form" method="post" style=""><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
         <input id="main_image_form_file" name="post[media]" type="file" />
         <input id="post_type" name="post[type]" type="hidden" value="main_image" />
-        <input id="post_prodid" name="post[prodid]" type="hidden" value="14" />
 </form>
 
+    <figure>
 <div class="main-image-container empty">
     <div>
         <img src="" class="main-img" id="main_image">
@@ -194,7 +188,6 @@
     </div>
 </div>
 
-    <figure>
       <figcaption contenteditable="true" id="main_img_caption" class="form-element edit-field">
 
       </figcaption>
@@ -350,7 +343,6 @@
 <!--MODIFIED--><script data-turbolinks-track="true" src="assets/edit-price.js?body=1"></script>
 <!--ADDED--><script src="scrolly.js"></script>
 
-
 <!-- TOS PROMPTER -->
   <script data-turbolinks-track="true" src="assets/tos.js?body=1"></script>
   <script>
@@ -371,7 +363,7 @@
       })(jQuery);
   </script>
 
-<!-- DEPRECATED IMAGE INSERTION -->
+<!-- IMAGE INSERTION -->
 <form accept-charset="UTF-8" action="/post/attach" class="media_form in-text-image-form" enctype="multipart/form-data" id="imgform" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" />    <input name="authenticity_token" type="hidden" value="sgPUtwEkxRl6LiqzHEwZg5PStTtkvloYdLcxK+sAG5k=" /></div>
   <input id="post_media" name="post[media]" type="file" />
   <input id="post_type" name="post[type]" type="hidden" value="image" />
