@@ -27,5 +27,5 @@ serve:
 
 dependencies:
 	npm install
-	$(BOWER) install
-	$(BOWER) update
+	$(BOWER) install --allow-root
+	$(BOWER) update --allow-root
