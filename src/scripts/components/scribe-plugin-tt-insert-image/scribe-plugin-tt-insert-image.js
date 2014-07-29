@@ -26,7 +26,7 @@ define('scribe-plugin-tt-insert-image', function(){
 
                 scribe.api.SimpleCommand.prototype.execute.call(thisInsertImageCommand, "</p><img src='"+imageUrl+"' id='tt-insert-most-recent-image'><p>");
                 var img = document.getElementById("tt-insert-most-recent-image");
-                img.id = "";
+                img.removeAttribute("id");
 
                 callback(img);
             });
